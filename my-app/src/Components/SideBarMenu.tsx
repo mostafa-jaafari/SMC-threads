@@ -83,7 +83,7 @@ export default function SideBarMenu({ CLASSNAME, BUTTONCLASSNAME, MENUCLASSNAME 
             {isMenuOpen && (
                 <section 
                     ref={MenuRef}
-                    className={`bg-red-500 border border-neutral-900 
+                    className={`bg-black border border-neutral-900 
                         rounded-lg p-4 min-w-60 space-y-1
                         ${MENUCLASSNAME}`}>
                     {SideBar_Menu_Links.map((item, index) => {
