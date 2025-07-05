@@ -48,36 +48,42 @@ const SideBar_Menu_Links = [
     },
 ];
 export default function SideBarMenu({ CLASSNAME, BUTTONCLASSNAME, MENUCLASSNAME }: SideBarMenuProps) {
-    const { openMenu, isMenuOpen, closeMenu } = useMenu();
+    const { isMenuOpen, setIsMenuOpen } = useMenu();
     const MenuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
-        const hidemenu = (e: MouseEvent) => {
-            if(MenuRef.current && !MenuRef.current.contains(e.target as Node)) {
-                closeMenu?.();
-            }
+    const hidemenu = (e: MouseEvent) => {
+        if(MenuRef.current && !MenuRef.current.contains(e.target as Node)) {
+            setIsMenuOpen(false);
         }
-        document.addEventListener("mousedown", hidemenu);
-        return () => {
-            document.removeEventListener("mousedown", hidemenu);
-        }
-    },[])
+    }
+    
+    // استخدم setTimeout لتأخير إضافة الـ event listener
+    const timer = setTimeout(() => {
+        document.addEventListener("click", hidemenu);
+    }, 0);
+    
+    return () => {
+        clearTimeout(timer);
+        document.removeEventListener("click", hidemenu);
+    }
+}, [isMenuOpen, setIsMenuOpen]);
     const HandleMenuLinkClick = (item: string) => {
         if(item.toLowerCase() === "log out") {
             signOut();
         }
-        // closeMenu?.();
     }
     return (
-        <main ref={MenuRef} className={CLASSNAME}>
+        <main className={CLASSNAME}>
             <span 
-                onClick={openMenu}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className={`${BUTTONCLASSNAME} text-neutral-600 cursor-pointer 
                     hover:text-white transition-all duration-300`}>
                 <AlignRight size={24} />
             </span>
             {isMenuOpen && (
                 <section 
-                    className={`bg-black border border-neutral-900 
+                    ref={MenuRef}
+                    className={`bg-red-500 border border-neutral-900 
                         rounded-lg p-4 min-w-60 space-y-1
                         ${MENUCLASSNAME}`}>
                     {SideBar_Menu_Links.map((item, index) => {
