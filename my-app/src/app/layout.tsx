@@ -6,6 +6,7 @@ import AddThread from "@/Components/AddThread";
 import { MenuProvider } from "@/context/MenuContext";
 import { ProviderSession } from "@/Components/ProviderSession";
 import { getServerSession } from "next-auth";
+import { CreatePostProvider } from "@/context/CreatePostContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,16 +34,18 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ProviderSession>
-          <MenuProvider>
-            {/* {pathname} */}
-            <section className="w-full min-h-screen flex">
-              {session && <SideBar />}
-              {children}
-              {session && <AddThread />}
-            </section>
-          </MenuProvider>
-        </ProviderSession>
+        <CreatePostProvider>
+          <ProviderSession>
+            <MenuProvider>
+              {/* {pathname} */}
+              <section className="w-full min-h-screen flex">
+                {session && <SideBar />}
+                {children}
+                {session && <AddThread />}
+              </section>
+            </MenuProvider>
+          </ProviderSession>
+        </CreatePostProvider>
       </body>
     </html>
   );

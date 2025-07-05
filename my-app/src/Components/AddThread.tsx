@@ -1,13 +1,12 @@
 'use client';
+import { useCreatePost } from "@/context/CreatePostContext";
 import { Plus } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 export default function AddThread() {
-    const pathname = usePathname();
-    if(pathname.startsWith("/auth")) return null;
+    const { setIsCreatePostOpen } = useCreatePost();
     return (
         <button
-            onClick={() => alert("Add Thread Clicked")}
+            onClick={() => setIsCreatePostOpen(true)}
             className="fixed bottom-8 right-8 rounded-lg 
                 cursor-pointer text-neutral-600 
                 hover:text-white transition-all 

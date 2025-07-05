@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import SideBarMenu from "./SideBarMenu";
+import { useCreatePost } from "@/context/CreatePostContext";
 
 const SideBar_Icons = [
     {
@@ -37,6 +38,8 @@ export default function SideBar() {
             setActivePath(pathname);
         }
     },[pathname]);
+
+    const { isCreatePostOpen, setIsCreatePostOpen } = useCreatePost();
     return (
         <section 
             className="lg:sticky fixed md:sticky lg:left-0 lg:top-0 md:left-0 
@@ -45,16 +48,18 @@ export default function SideBar() {
                 lg:w-20 w-full lg:h-screen md:h-screen 
                 h-16 backdrop-blur-[4px] bg-neutral-900/50 
                 justify-between">
-            <div 
-                className="hidden lg:flex md:flex relative cursor-pointer w-12 
+            <Link href="/">
+                <div 
+                    className="hidden lg:flex md:flex relative cursor-pointer w-12 
                     h-12 transtion-all duration-300 hover:scale-105">
-                <Image 
-                    src="/PNG-LOGO-WHITE.png"
-                    alt="SMC Logo"
-                    fill
-                    className="object-contain p-2"
-                />
-            </div>
+                    <Image 
+                        src="/PNG-LOGO-WHITE.png"
+                        alt="SMC Logo"
+                        fill
+                        className="object-contain p-2"
+                        />
+                </div>
+            </Link>
             <ul 
                 className="w-full md:w-max lg:w-max lg:px-0 md:px-0 px-10
                     flex lg:justify-center md:justify-center 
@@ -64,6 +69,7 @@ export default function SideBar() {
                     if(item.icon === Plus) {
                         return (
                             <button
+                                onClick={() => setIsCreatePostOpen(!isCreatePostOpen)}
                                 className="rounded-lg cursor-pointer 
                                     text-neutral-600 hover:text-white transition-all duration-200
                                     bg-neutral-800 hover:bg-neutral-900 p-2.5"
