@@ -1,12 +1,12 @@
-import ClientTest from "./ClientTest";
-import { getServerSession } from "next-auth";
+// import { getServerSession } from "next-auth";
+
+import { SignOut } from "@/Components/SignOut";
 
 export default async function Home() {
-  const session = await getServerSession();
+  // const session = await getServerSession();
   return (
     <main>
-      hello {session?.user?.name || "Guest"}!
-      <ClientTest />
+      <SignOut />
     </main>
   );
 }

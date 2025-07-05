@@ -8,7 +8,7 @@ export default function page(){
     return (
         <main className="space-y-6 w-full min-h-screen flex flex-col items-center py-20">
             <img 
-                src="./PNG-LOGO-WHITE.png"
+                src="/PNG-LOGO-WHITE.png"
                 alt="SMC Threads Logo"
                 className="w-[120px] shadow-inner-overlay shadow-yellow-600"
             />

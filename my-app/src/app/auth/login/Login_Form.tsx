@@ -6,12 +6,12 @@ import { signIn } from "next-auth/react";
 export default function Login_Form() {
     const Fixed_Login_Logos = [
         {
-            image: "./PNG-LOGO-WHITE.png",
+            image: "/PNG-LOGO-WHITE.png",
             alt: "SMC Threads Logo",
             className: "fixed -left-5 blur-[2px] -top-5 w-[120px] rotate-45"
         },
         {
-            image: "./PNG-LOGO-WHITE.png",
+            image: "/PNG-LOGO-WHITE.png",
             alt: "SMC Threads Logo",
             className: "fixed -right-5 blur-[2px] -bottom-5 w-[120px] rotate-45"
         },
@@ -46,7 +46,7 @@ export default function Login_Form() {
                         hover:bg-black cursor-pointer
                         bg-black/30 text-md">
                     <img 
-                        src="./GoogleIcon.png"
+                        src="/GoogleIcon.png"
                         alt="Google Logo"
                         className="w-6 h-6"
                     />
@@ -58,7 +58,7 @@ export default function Login_Form() {
                         hover:bg-black cursor-pointer
                         bg-black/30 text-md">
                     <img 
-                        src="./FacebookIcon.png"
+                        src="/FacebookIcon.png"
                         alt="Facebook Logo"
                         className="w-6 h-6"
                     />
