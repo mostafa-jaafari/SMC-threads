@@ -27,10 +27,24 @@ export const authOptions: AuthOptions = {
             );
 
             const user = userCredential.user;
+
+            // تسجيل بيانات المستخدم في Firestore بعد تسجيل الدخول بنجاح
+            const userRef = doc(db, "users", user.email!);
+            const userSnap = await getDoc(userRef);
+            if (!userSnap.exists()) {
+              await setDoc(userRef, {
+                id: user.uid,
+                email: user.email,
+                name: user.displayName || "UnknownUser",
+                profileimage: user.photoURL || "https://s.gravatar.com/avatar/0743d216d4ce5aea55b0a45675d313e4?s=64&d=mp",
+                emailVerified: user.emailVerified || null,
+              });
+            }
+
             return {
               id: user.uid,
               email: user.email,
-              name: user.displayName || "UnknowUser",
+              name: user.displayName || "UnknownUser",
               image: user.photoURL || "https://s.gravatar.com/avatar/0743d216d4ce5aea55b0a45675d313e4?s=64&d=mp",
             };
           }
@@ -40,34 +54,38 @@ export const authOptions: AuthOptions = {
           return null;
         }
       },
-    })
+    }),
   ],
+
   callbacks: {
+    // عند تسجيل الدخول عبر جوجل، هنا ننفذ تسجيل بيانات المستخدم في Firestore
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google" && profile?.email) {
+        try {
+          const userRef = doc(db, "users", profile.email);
+          const userSnap = await getDoc(userRef);
+          if (!userSnap.exists()) {
+            await setDoc(userRef, {
+              id: profile.sub,
+              email: profile.email,
+              name: profile.name,
+              profileimage: profile.image,
+            });
+          }
+        } catch (error) {
+          console.error("🔥 Firestore Error in signIn callback:", error);
+          return false; // يمنع تسجيل الدخول إذا حدث خطأ في التسجيل
+        }
+      }
+      return true;
+    },
+
     async jwt({ token, account, profile }) {
       if (account && profile) {
         token.id = profile.sub;
         token.email = profile.email;
         token.name = profile.name;
         token.picture = profile.image || "";
-
-        try {
-          if (profile.email) {
-            const userRef = doc(db, "users", profile.email);
-            const userSnap = await getDoc(userRef);
-
-            if (!userSnap.exists()) {
-              await setDoc(userRef, {
-                id: profile.sub,
-                email: profile.email,
-                name: profile.name,
-                profileimage: profile.image,
-                emailVerified: null,
-              });
-            }
-          }
-        } catch (error) {
-          console.error("🔥 Firestore Error:", error);
-        }
       }
       return token;
     },

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import ClientTest from "./ClientTest";
 import { getServerSession } from "next-auth";
 
