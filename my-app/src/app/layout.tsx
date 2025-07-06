@@ -8,6 +8,7 @@ import { ProviderSession } from "@/Components/ProviderSession";
 import { getServerSession } from "next-auth";
 import { CreatePostProvider } from "@/context/CreatePostContext";
 import FeedTabs from "@/Components/FeedTabs";
+import CreatePost from "@/Components/CreatePost";
 
 const geistSans = Inter({
   variable: "--font-inter-sans",
@@ -33,6 +34,7 @@ export default async function RootLayout({
       >
         <CreatePostProvider>
           <ProviderSession>
+            <CreatePost />
             <MenuProvider>
               <FeedTabs />
               <section className="w-full min-h-screen flex">
