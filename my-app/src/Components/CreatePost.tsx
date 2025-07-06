@@ -24,7 +24,7 @@ export default function CreatePost() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     },[])
-    const { isCreatePostOpen, setIsCreatePostOpen } = useCreatePost();
+    const { isCreatePostOpen, setIsCreatePostOpen, HandleCreatePost } = useCreatePost();
     if(!isCreatePostOpen) return null;
     return (
         <main 
@@ -32,8 +32,9 @@ export default function CreatePost() {
                 h-screen bg-black/30 flex justify-center items-center">
             <section 
                 ref={PostMenuRef}
-                className="w-[80%] md:w-1/2 lg:w-1/2 min-h-40 bg-neutral-900 
-                    border border-neutral-700 rounded-xl">
+                className="w-[90%] max-h-[60vh] sm:w-2/3 md:w-2/3 lg:w-1/2 
+                    bg-neutral-900 lg:h-max md:h-max sm:h-max
+                    border border-neutral-700 rounded-xl z-50">
                 <div 
                     className="py-2 px-6 flex items-center 
                         justify-between border-b border-neutral-700">
@@ -46,7 +47,7 @@ export default function CreatePost() {
                     >
                         Cancel
                     </button>
-                    <h1 className="lg:text-xl md:text-xl text-neutral-400">
+                    <h1 className="lg:text-xl md:text-xl text-neutral-300">
                         Create Post
                     </h1>
                     <span className="cursor-pointer text-neutral-300 hover:text-white">
@@ -154,6 +155,7 @@ export default function CreatePost() {
                             Anyone can reply & quote
                         </button>
                         <button 
+                            onClick={() => HandleCreatePost && HandleCreatePost("test test")}
                             className="border border-neutral-800 
                                 py-1 px-4 rounded-lg hover:bg-neutral-800 
                                 hover:border-neutral-700 cursor-pointer 

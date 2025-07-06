@@ -32,19 +32,19 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} antialiased`}
       >
-        <CreatePostProvider>
           <ProviderSession>
-            <CreatePost />
-            <MenuProvider>
-              <FeedTabs />
-              <section className="w-full min-h-screen flex">
-                {session && <SideBar />}
-                {children}
-                {session && <AddThread />}
-              </section>
-            </MenuProvider>
+            <CreatePostProvider>
+                <CreatePost />
+                <MenuProvider>
+                  <FeedTabs />
+                  <section className="w-full min-h-screen flex">
+                    {session && <SideBar />}
+                    {children}
+                    {session && <AddThread />}
+                  </section>
+                </MenuProvider>
+            </CreatePostProvider>
           </ProviderSession>
-        </CreatePostProvider>
       </body>
     </html>
   );

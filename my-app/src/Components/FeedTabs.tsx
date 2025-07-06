@@ -21,7 +21,7 @@ export default function FeedTabs() {
             className="h-14 lg:border-none md:border-none 
                 border-b-2 border-neutral-700 
                 fixed top-16 md:top-0 lg:top-0 
-                md:left-0 lg:left-0 w-full 
+                md:left-0 lg:left-0 w-full
                 flex items-center justify-center 
                 lg:gap-14 md:gap-14 text-sm font-semibold">
             <Link 
