@@ -9,7 +9,7 @@ import { v4 as uuid4 } from 'uuid';
 type CreatePostContextType = {
   isCreatePostOpen: boolean;
   setIsCreatePostOpen: (isOpen: boolean) => void;
-  HandleCreatePost?: (PostDescription : string) => void;
+  HandleCreatePost?: (PostDescription: string, selectedTopic: string) => Promise<void>;
 };
 
 const CreatePostContext = createContext<CreatePostContextType | undefined>(undefined);
@@ -21,7 +21,7 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
   const Current_User_Email = session?.user?.email;
 
   const Post_UuId = session?.user?.name && session?.user?.name.replace(' ', '-').toLowerCase() + "-" + uuid4();
-  const HandleCreatePost = async (PostDescription : string) => {
+  const HandleCreatePost = async (PostDescription: string ,selectedTopic :string) => {
     if (!Current_User_Email) return;
     try {
       const DocRef = doc(db, 'users', Current_User_Email);
@@ -30,6 +30,7 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
           uuid: Post_UuId,
           postowner: Current_User_Email,
           whatsnew: PostDescription,
+          topic: selectedTopic,
           likesCount: 0,
           createdAt: new Date().toISOString(),
         })

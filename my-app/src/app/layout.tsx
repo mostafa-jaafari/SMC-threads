@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 import { CreatePostProvider } from "@/context/CreatePostContext";
 import FeedTabs from "@/Components/FeedTabs";
 import CreatePost from "@/Components/CreatePost";
+import { AddTopicProvider } from "@/context/AddTopicContext";
 
 const geistSans = Inter({
   variable: "--font-inter-sans",
@@ -33,17 +34,19 @@ export default async function RootLayout({
         className={`${geistSans.variable} antialiased`}
       >
           <ProviderSession>
-            <CreatePostProvider>
+            <AddTopicProvider>
+              <CreatePostProvider>
                 <CreatePost />
-                <MenuProvider>
-                  <FeedTabs />
-                  <section className="w-full min-h-screen flex">
-                    {session && <SideBar />}
-                    {children}
-                    {session && <AddThread />}
-                  </section>
-                </MenuProvider>
-            </CreatePostProvider>
+                  <MenuProvider>
+                    <FeedTabs />
+                    <section className="w-full min-h-screen flex">
+                      {session && <SideBar />}
+                      {children}
+                      {session && <AddThread />}
+                    </section>
+                  </MenuProvider>
+              </CreatePostProvider>
+            </AddTopicProvider>
           </ProviderSession>
       </body>
     </html>

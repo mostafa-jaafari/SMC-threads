@@ -4,11 +4,17 @@ import { useCreatePost } from "@/context/CreatePostContext";
 import { AlignLeft, CalendarClock, ChevronRight, ImagePlay, Images, MapPin, Smile } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import AddTopic from "./AddTopic";
+import { useAddTopic } from "@/context/AddTopicContext";
 
 
 export default function CreatePost() {
-
+    
+    const { selectedTopic , setSelectedTopic} = useAddTopic();
+    const [Inputs, setInputs] = useState({
+        whatisnew: "",
+    })
     const session = useSession();
     const First_Letter = session?.data?.user?.name?.charAt(0).toUpperCase() || "";
     const PostMenuRef = useRef<HTMLElement>(null);
@@ -26,13 +32,23 @@ export default function CreatePost() {
     },[])
     const { isCreatePostOpen, setIsCreatePostOpen, HandleCreatePost } = useCreatePost();
     if(!isCreatePostOpen) return null;
+    const HandleCreateNewPost = () => {
+        if(!HandleCreatePost) return;
+        HandleCreatePost(Inputs.whatisnew, selectedTopic ?? "");
+        
+        setInputs({
+            whatisnew: '',
+        })
+        if(setSelectedTopic) setSelectedTopic("")
+    }
+
     return (
         <main 
             className="fixed top-0 left-0 w-full 
                 h-screen bg-black/30 flex justify-center items-center">
             <section 
                 ref={PostMenuRef}
-                className="w-[90%] max-h-[60vh] sm:w-2/3 md:w-2/3 lg:w-1/2 
+                className="w-[90%] max-h-[60vh] overflow-y-auto sm:w-2/3 md:w-2/3 lg:w-1/2 
                     bg-neutral-900 lg:h-max md:h-max sm:h-max
                     border border-neutral-700 rounded-xl z-50">
                 <div 
@@ -54,67 +70,31 @@ export default function CreatePost() {
                         <CalendarClock size={26} />
                     </span>
                 </div>
-                <div className="-space-y-4">
-                    <div className="p-6 flex items-center gap-3">
-                    <div 
-                        className="relative w-12 h-12 rounded-full 
-                            overflow-hidden border border-neutral-600">
-                                {session?.data?.user?.image ? (
-                                    <Image 
-                                        src={session?.data?.user?.image}
-                                        alt="User Profile"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                ) : (
-                                    <span 
-                                        className="h-full w-full text-xl font-semibold 
-                                            bg-neutral-800 flex flex-col justify-center 
-                                            items-center rounded-full overflow-hidden">
-                                        {First_Letter}
-                                    </span>
-                                )}
-                    </div>
-                    <div className="-space-y-1">
-                        <span className="flex items-end gap-1">
-                            <h1 className="text-neutral-300">
-                                {session?.data?.user?.name}
-                            </h1>
-                            <ChevronRight size={18} className="text-neutral-600" />
-                            <button 
-                                className="text-neutral-600 text-sm hover:text-neutral-500 
-                                    transition-all duration-300 cursor-pointer">
-                                Add a topic
-                            </button>
-                        </span>
-                        <input 
-                            type="text" 
-                            name="" 
-                            id=""
-                            autoFocus
-                            placeholder="What's new?"
-                            className="focus:outline-none text-sm 
-                                placeholder:font-normal font-semibold 
-                                text-neutral-500 border-none w-full"
-                        />
-                    </div>
-                    </div>
-                    <div className="px-12 border-neutral-900">
-                        <ul 
-                            className="w-full flex items-center 
-                                gap-5 border-l-2 border-neutral-800
-                                px-9 py-1">
-                            <Images size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                            <ImagePlay size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                            <Smile size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                            <AlignLeft size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                            <MapPin size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                        </ul>
-                    </div>
-                </div>
-                    <div className="px-9 py-2 flex items-center gap-2">
+                <section className="w-full flex gap-4 p-6">
+                    <div className="flex gap-1 flex-col justify-between items-center">
                         <div 
-                            className="relative w-6 h-6 
+                            className="relative w-12 h-12 flex-shrink-0 rounded-full 
+                                overflow-hidden border border-neutral-600">
+                                    {session?.data?.user?.image ? (
+                                        <Image 
+                                            src={session?.data?.user?.image}
+                                            alt="User Profile"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <span 
+                                            className="h-full w-full text-xl font-semibold 
+                                                bg-neutral-800 flex flex-col justify-center 
+                                                items-center rounded-full overflow-hidden">
+                                            {First_Letter}
+                                        </span>
+                                    )}
+                        </div>
+                        <span className="border-l-2 border-neutral-800 h-full">
+                        </span>
+                        <div 
+                            className="relative w-6 h-6 flex-shrink-0
                                 rounded-full overflow-hidden border border-neutral-600">
                                     {session?.data?.user?.image ? (
                                     <Image 
@@ -133,17 +113,54 @@ export default function CreatePost() {
                                         </span>
                                     )}
                         </div>
-                        <input 
-                            type="text" 
-                            name="" 
-                            id=""
-                            placeholder="Add a comment..."
-                            className="focus:outline-none text-sm 
-                                placeholder:font-normal font-semibold 
-                                text-neutral-500 border-none w-full bg-transparent"
-                        />
                     </div>
-
+                    <div className="space-y-4 flex-shrink-0">
+                        <div className="">
+                            <span className="flex items-end gap-1">
+                                <h1 className="text-neutral-300">
+                                    {session?.data?.user?.name}
+                                </h1>
+                                <ChevronRight size={18} className="text-neutral-600" />
+                                <AddTopic />
+                            </span>
+                            <textarea 
+                                name="whatisnew"
+                                value={Inputs.whatisnew}
+                                onChange={(e) =>
+                                    setInputs({ ...Inputs, whatisnew: e.target.value })
+                                }
+                                id=""
+                                autoFocus
+                                placeholder="What's new?"
+                                className="fs-content focus:outline-none text-sm 
+                                    placeholder:font-normal font-semibold 
+                                    text-neutral-500 border-none w-full"
+                            />
+                        </div>
+                        <div className="">
+                            <ul 
+                                className="w-full flex items-center 
+                                    gap-5 py-1">
+                                <Images size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
+                                <ImagePlay size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
+                                <Smile size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
+                                <AlignLeft size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
+                                <MapPin size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
+                            </ul>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <input 
+                                type="text" 
+                                name="" 
+                                id=""
+                                placeholder="Add a comment..."
+                                className="focus:outline-none text-sm 
+                                    placeholder:font-normal font-semibold 
+                                    text-neutral-500 border-none w-full bg-transparent"
+                            />
+                        </div>
+                    </div>
+                </section>
                     {/* ---------- */}
 
                     <div className="px-10 py-2 flex items-center 
@@ -155,11 +172,15 @@ export default function CreatePost() {
                             Anyone can reply & quote
                         </button>
                         <button 
-                            onClick={() => HandleCreatePost && HandleCreatePost("test test")}
+                            onClick={HandleCreateNewPost}
+                            disabled={Inputs.whatisnew === ""}
                             className="border border-neutral-800 
                                 py-1 px-4 rounded-lg hover:bg-neutral-800 
                                 hover:border-neutral-700 cursor-pointer 
-                                transition-all duration-300">
+                                transition-all duration-300 
+                                disabled:text-neutral-700 
+                                disabled:cursor-not-allowed
+                                disabled:hover:bg-transparent">
                             Post
                         </button>
                     </div>
