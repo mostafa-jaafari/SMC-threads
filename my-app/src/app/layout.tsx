@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import SideBar from "@/Components/SideBar";
 import AddThread from "@/Components/AddThread";
@@ -7,14 +7,11 @@ import { MenuProvider } from "@/context/MenuContext";
 import { ProviderSession } from "@/Components/ProviderSession";
 import { getServerSession } from "next-auth";
 import { CreatePostProvider } from "@/context/CreatePostContext";
+import FeedTabs from "@/Components/FeedTabs";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const geistSans = Inter({
+  variable: "--font-inter-sans",
+  weight: ["500", "600", "700", "900"], // 500: medium, 600: semibold, 700: bold, 900: black
   subsets: ["latin"],
 });
 
@@ -32,12 +29,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} antialiased`}
       >
         <CreatePostProvider>
           <ProviderSession>
             <MenuProvider>
-              {/* {pathname} */}
+              <FeedTabs />
               <section className="w-full min-h-screen flex">
                 {session && <SideBar />}
                 {children}

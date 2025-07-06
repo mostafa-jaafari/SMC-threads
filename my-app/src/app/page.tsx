@@ -1,5 +1,3 @@
-// import { getServerSession } from "next-auth";
-
 import CreatePost from "@/Components/CreatePost";
 import HeaderMobile from "@/Components/HeaderMobile";
 
@@ -9,6 +7,9 @@ export default async function Home() {
     <main className="w-full">
         <HeaderMobile />
         <CreatePost />
+        <section className="w-full bg-red-500/20">
+          test
+        </section>
     </main>
   );
 }
