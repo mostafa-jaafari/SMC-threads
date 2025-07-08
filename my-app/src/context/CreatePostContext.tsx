@@ -11,7 +11,7 @@ import { v4 as uuid4 } from 'uuid';
 type CreatePostContextType = {
   isCreatePostOpen: boolean;
   setIsCreatePostOpen: (isOpen: boolean) => void;
-  HandleCreatePost?: (PostDescription: string, selectedTopic: string, selectedFile:File | null) => Promise<void>;
+  HandleCreatePost?: (PostDescription: string, selectedTopic: string, selectedFile:File | null, postvisibility: string) => Promise<void>;
   isLoadingCreatePost?: boolean;
   setIsFinishCreatingPost?: (isFinish: boolean) => void;
   isFinishCreatingPost?: boolean;
@@ -28,7 +28,7 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
   const Current_User_Email = session?.user?.email;
 
   const Post_UuId = session?.user?.name && session?.user?.name.replace(' ', '-').toLowerCase() + "-" + uuid4();
-  const HandleCreatePost = async (PostDescription: string ,selectedTopic :string, selectedFile:File | null) => {
+  const HandleCreatePost = async (PostDescription: string ,selectedTopic :string, selectedFile:File | null, postvisibility: string) => {
     if (!Current_User_Email) return;
     try {
       setIsLoadingCreatePost(true);
@@ -48,6 +48,7 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
       const data = await res.json();
       const Imgae_Url = data.secure_url;
       const DocRef = doc(db, 'users', Current_User_Email);
+      const AllPostsRef = doc(db, 'global', "posts");
       await updateDoc(DocRef, {
         posts: arrayUnion({
           uuid: Post_UuId,
@@ -57,13 +58,28 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
           likesCount: 0,
           createdAt: new Date().toISOString(),
           imagepost: Imgae_Url || "",
+          visibility: postvisibility || "",
         })
       })
       setIsLoadingCreatePost(false);
       setIsFinishCreatingPost(true);
+      await updateDoc(AllPostsRef, {
+        posts: arrayUnion({
+          uuid: Post_UuId,
+          postowner: Current_User_Email,
+          whatsnew: PostDescription || "",
+          topic: selectedTopic || "",
+          likesCount: 0,
+          createdAt: new Date().toISOString(),
+          imagepost: Imgae_Url || "",
+          visibility: postvisibility || "",
+        })
+      })
       toast.success(<span>Post created successfuly <Link className="underline" href={`/${Post_UuId}`}>View</Link></span>)
     } catch (error) {
       alert(error);
+      setIsLoadingCreatePost(false);
+      setIsFinishCreatingPost(true);
     }
   };
   return (

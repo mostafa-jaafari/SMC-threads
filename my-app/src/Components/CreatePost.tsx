@@ -65,11 +65,12 @@ export default function CreatePost() {
             setIsFinishCreatingPost(false);
         }
     },[isLoadingCreatePost, isFinishCreatingPost])
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isVisibilityMenuOpen, setIsVisibilityMenuOpen] = useState(false);
+    const [selectedVisibility, setSelectedVisibility] = useState("anyone");
     if(!isCreatePostOpen) return null;
     const HandleCreateNewPost = () => {
         if(!HandleCreatePost) return;
-        HandleCreatePost(Inputs.whatisnew, selectedTopic ?? "", selectedFile);
+        HandleCreatePost(Inputs.whatisnew, selectedTopic ?? "", selectedFile, selectedVisibility);
     }
 
     return (
@@ -242,15 +243,17 @@ export default function CreatePost() {
                         justify-between border-t border-neutral-800">
                         <div className="relative w-full h-full">
                             <button 
-                                onClick={() => setIsMenuOpen(true)}
+                                onClick={() => setIsVisibilityMenuOpen(true)}
                                 className="text-neutral-600 
                                 hover:text-neutral-500 transition-all 
                                 cursor-pointer duration-300">
-                                Anyone can reply & quote
+                                {selectedVisibility} can reply & quote
                             </button>
                             <PostPrivacy
-                                setIsMenuOpen={setIsMenuOpen}
-                                isMenuOpen={isMenuOpen}
+                                setIsVisibilityMenuOpen={setIsVisibilityMenuOpen}
+                                isVisibilityMenuOpen={isVisibilityMenuOpen}
+                                setSelectedVisibility={setSelectedVisibility}
+                                selectedVisibility={selectedVisibility}
                             />
                         </div>
                         <button 

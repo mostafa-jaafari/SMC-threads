@@ -43,7 +43,7 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, profile }) {
     try {
       if (profile?.email) {
         const userRef = doc(db, "users", profile.email);
@@ -78,7 +78,7 @@ export const authOptions: AuthOptions = {
         id: token.id,
         email: token.email,
         name: token.name,
-        image: token.picture,
+        image: token.picture || session.user?.image,
       };
       return session;
     },
