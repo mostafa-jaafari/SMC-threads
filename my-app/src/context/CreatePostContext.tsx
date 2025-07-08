@@ -3,20 +3,27 @@
 import { db } from "@/Firebase";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { createContext, useContext, useState } from "react";
+import { toast } from "sonner";
 import { v4 as uuid4 } from 'uuid';
 
 type CreatePostContextType = {
   isCreatePostOpen: boolean;
   setIsCreatePostOpen: (isOpen: boolean) => void;
   HandleCreatePost?: (PostDescription: string, selectedTopic: string, selectedFile:File | null) => Promise<void>;
+  isLoadingCreatePost?: boolean;
+  setIsFinishCreatingPost?: (isFinish: boolean) => void;
+  isFinishCreatingPost?: boolean;
 };
 
 const CreatePostContext = createContext<CreatePostContextType | undefined>(undefined);
 
 export function CreatePostProvider({ children }: { children: React.ReactNode }) {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
-
+  const [isLoadingCreatePost, setIsLoadingCreatePost] = useState<boolean>(false);
+  const [isFinishCreatingPost, setIsFinishCreatingPost] = useState(false)
+  
   const { data: session } = useSession();
   const Current_User_Email = session?.user?.email;
 
@@ -24,7 +31,10 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
   const HandleCreatePost = async (PostDescription: string ,selectedTopic :string, selectedFile:File | null) => {
     if (!Current_User_Email) return;
     try {
+      setIsLoadingCreatePost(true);
       if(selectedFile === null) {
+        setIsLoadingCreatePost(false);
+        setIsFinishCreatingPost(true);
         alert('File Not Selected');
         return;
       }
@@ -49,12 +59,15 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
           imagepost: Imgae_Url || "",
         })
       })
+      setIsLoadingCreatePost(false);
+      setIsFinishCreatingPost(true);
+      toast.success(<span>Post created successfuly <Link className="underline" href={`/${Post_UuId}`}>View</Link></span>)
     } catch (error) {
       alert(error);
     }
   };
   return (
-    <CreatePostContext.Provider value={{ isCreatePostOpen, setIsCreatePostOpen, HandleCreatePost }}>
+    <CreatePostContext.Provider value={{ isCreatePostOpen, setIsCreatePostOpen, HandleCreatePost, isLoadingCreatePost, setIsFinishCreatingPost, isFinishCreatingPost }}>
         {children}
     </CreatePostContext.Provider>
   );

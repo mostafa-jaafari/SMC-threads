@@ -51,16 +51,23 @@ export default function CreatePost() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     },[])
-    const { isCreatePostOpen, setIsCreatePostOpen, HandleCreatePost } = useCreatePost();
+    const { isCreatePostOpen, setIsCreatePostOpen, HandleCreatePost, isLoadingCreatePost, isFinishCreatingPost, setIsFinishCreatingPost } = useCreatePost();
+    useEffect(() => {
+        if(isFinishCreatingPost){
+            setPrevImageUrl(null);
+            setInputs({
+                whatisnew: '',
+            })
+            setIsCreatePostOpen(false)
+            if(setSelectedTopic) setSelectedTopic("")
+        if(!setIsFinishCreatingPost) return;
+            setIsFinishCreatingPost(false);
+        }
+    },[isLoadingCreatePost, isFinishCreatingPost])
     if(!isCreatePostOpen) return null;
     const HandleCreateNewPost = () => {
         if(!HandleCreatePost) return;
         HandleCreatePost(Inputs.whatisnew, selectedTopic ?? "", selectedFile);
-        
-        setInputs({
-            whatisnew: '',
-        })
-        if(setSelectedTopic) setSelectedTopic("")
     }
 
     return (
@@ -156,7 +163,7 @@ export default function CreatePost() {
                                 placeholder:font-normal font-semibold 
                                 text-neutral-500 border-none w-full"
                         />
-                        {selectedFile && (
+                        {prevImageUrl && (
                             <div
                                 className="group relative w-full h-80 rounded-xl border 
                                     border-neutral-700 overflow-hidden bg-neutral-800"
@@ -169,7 +176,7 @@ export default function CreatePost() {
                                 />
                                 <X 
                                     size={20}
-                                    onClick={() => setSelectedFile(null)}
+                                    onClick={() => setPrevImageUrl(null)}
                                     className="group-hover:flex hidden cursor-pointer 
                                         transition-all duration-300 text-neutral-500 
                                         hover:text-neutral-300 absolute right-2 top-2"
@@ -239,15 +246,19 @@ export default function CreatePost() {
                         </button>
                         <button 
                             onClick={HandleCreateNewPost}
-                            disabled={Inputs.whatisnew === ""}
-                            className="border border-neutral-800 
+                            disabled={Inputs.whatisnew === "" || isLoadingCreatePost}
+                            className={`border border-neutral-800 
                                 py-1 px-4 rounded-lg hover:bg-neutral-800 
-                                hover:border-neutral-700 cursor-pointer 
-                                transition-all duration-300 
-                                disabled:text-neutral-700 
-                                disabled:cursor-not-allowed
-                                disabled:hover:bg-transparent">
-                            Post
+                                hover:border-neutral-700 
+                                transition-all duration-300 flex items-center justify-center
+                                ${isLoadingCreatePost ? "cursor-not-allowed bg-neutral-800 text-neutral-700" 
+                                :
+                                "cursor-pointer disabled:text-neutral-700 disabled:cursor-not-allowed disabled:hover:bg-transparent"}`}>
+                            {isLoadingCreatePost ? (
+                                <span className="w-6 h-6 border-2 border-transparent border-t-current rounded-full animate-spin" />
+                            ) : (
+                                "Post"
+                            )}
                         </button>
                     </div>
             </section>
