@@ -7,6 +7,7 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import AddTopic from "./AddTopic";
 import { useAddTopic } from "@/context/AddTopicContext";
+import PostPrivacy from "./PostPrivacy";
 
 
 export default function CreatePost() {
@@ -60,10 +61,11 @@ export default function CreatePost() {
             })
             setIsCreatePostOpen(false)
             if(setSelectedTopic) setSelectedTopic("")
-        if(!setIsFinishCreatingPost) return;
+                if(!setIsFinishCreatingPost) return;
             setIsFinishCreatingPost(false);
         }
     },[isLoadingCreatePost, isFinishCreatingPost])
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     if(!isCreatePostOpen) return null;
     const HandleCreateNewPost = () => {
         if(!HandleCreatePost) return;
@@ -238,12 +240,19 @@ export default function CreatePost() {
 
                     <div className="px-10 py-2 flex items-center 
                         justify-between border-t border-neutral-800">
-                        <button 
-                            className="text-neutral-600 
+                        <div className="relative w-full h-full">
+                            <button 
+                                onClick={() => setIsMenuOpen(true)}
+                                className="text-neutral-600 
                                 hover:text-neutral-500 transition-all 
                                 cursor-pointer duration-300">
-                            Anyone can reply & quote
-                        </button>
+                                Anyone can reply & quote
+                            </button>
+                            <PostPrivacy
+                                setIsMenuOpen={setIsMenuOpen}
+                                isMenuOpen={isMenuOpen}
+                            />
+                        </div>
                         <button 
                             onClick={HandleCreateNewPost}
                             disabled={Inputs.whatisnew === "" || isLoadingCreatePost}
