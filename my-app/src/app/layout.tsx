@@ -10,6 +10,7 @@ import { CreatePostProvider } from "@/context/CreatePostContext";
 import FeedTabs from "@/Components/FeedTabs";
 import CreatePost from "@/Components/CreatePost";
 import { AddTopicProvider } from "@/context/AddTopicContext";
+import { Toaster } from "sonner";
 
 const geistSans = Inter({
   variable: "--font-inter-sans",
@@ -33,6 +34,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} antialiased`}
       >
+        <Toaster richColors position="top-center" />
           <ProviderSession>
             <AddTopicProvider>
               <CreatePostProvider>

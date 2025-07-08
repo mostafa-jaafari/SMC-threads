@@ -33,7 +33,9 @@ export default function AddTopic() {
     return (
         <section>
             {isOther ? (
-                <div className="w-full flex items-center px-2 gap-2 border border-neutral-800 rounded-lg">
+                <div 
+                    className="w-full flex items-center px-2 
+                        gap-2 border border-neutral-800 rounded-lg">
                     <input 
                         type="text" 
                         autoFocus
@@ -75,7 +77,8 @@ export default function AddTopic() {
             {openTopicMenu && (
                 <div 
                     ref={AddTopicMenuRef}
-                    className="absolute bottom-32 bg-black w-48 h-60 overflow-y-auto rounded-lg 
+                    className="absolute z-50 bottom-48 bg-black w-48 h-60 
+                        overflow-y-auto rounded-lg 
                         overflow-hidden border border-neutral-800">
                     {Topics.map((topic, index) => {
                         return (

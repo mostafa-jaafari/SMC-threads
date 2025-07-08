@@ -1,10 +1,10 @@
 'use client';
 
 import { useCreatePost } from "@/context/CreatePostContext";
-import { AlignLeft, CalendarClock, ChevronRight, ImagePlay, Images, MapPin, Smile } from "lucide-react";
+import { AlignLeft, CalendarClock, ChevronRight, ImagePlay, Images, MapPin, Smile, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AddTopic from "./AddTopic";
 import { useAddTopic } from "@/context/AddTopicContext";
 
@@ -15,6 +15,27 @@ export default function CreatePost() {
     const [Inputs, setInputs] = useState({
         whatisnew: "",
     })
+    // -------- File Selected ---------
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [prevImageUrl, setPrevImageUrl] = useState<string | null>(null)
+    const InputFileRef = useRef<HTMLInputElement | null>(null);
+    const HandleUploadImageBtn = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target?.files?.[0];
+        if(!file) return;
+        const objectUrl = URL.createObjectURL(file);
+        setPrevImageUrl(objectUrl)
+        setSelectedFile(file)
+    }
+    const HandleIconClick = () => {
+        InputFileRef.current?.click();
+    }
+    useEffect(() => {
+        return () => {
+            if (prevImageUrl) {
+            URL.revokeObjectURL(prevImageUrl);
+            }
+        };
+    }, [prevImageUrl]);
     const session = useSession();
     const First_Letter = session?.data?.user?.name?.charAt(0).toUpperCase() || "";
     const PostMenuRef = useRef<HTMLElement>(null);
@@ -34,7 +55,7 @@ export default function CreatePost() {
     if(!isCreatePostOpen) return null;
     const HandleCreateNewPost = () => {
         if(!HandleCreatePost) return;
-        HandleCreatePost(Inputs.whatisnew, selectedTopic ?? "");
+        HandleCreatePost(Inputs.whatisnew, selectedTopic ?? "", selectedFile);
         
         setInputs({
             whatisnew: '',
@@ -114,40 +135,85 @@ export default function CreatePost() {
                                     )}
                         </div>
                     </div>
-                    <div className="space-y-4 flex-shrink-0">
-                        <div className="">
-                            <span className="flex items-end gap-1">
-                                <h1 className="text-neutral-300">
-                                    {session?.data?.user?.name}
-                                </h1>
-                                <ChevronRight size={18} className="text-neutral-600" />
-                                <AddTopic />
-                            </span>
-                            <textarea 
-                                name="whatisnew"
-                                value={Inputs.whatisnew}
-                                onChange={(e) =>
-                                    setInputs({ ...Inputs, whatisnew: e.target.value })
-                                }
-                                id=""
-                                autoFocus
-                                placeholder="What's new?"
-                                className="fs-content focus:outline-none text-sm 
-                                    placeholder:font-normal font-semibold 
-                                    text-neutral-500 border-none w-full"
+                    <div className="space-y-4 w-full">
+                        <span className="flex items-end gap-1">
+                            <h1 className="text-neutral-300 text-nowrap">
+                                {session?.data?.user?.name}
+                            </h1>
+                            <ChevronRight size={18} className="text-neutral-600" />
+                            <AddTopic />
+                        </span>
+                        <textarea 
+                            name="whatisnew"
+                            value={Inputs.whatisnew}
+                            onChange={(e) =>
+                                setInputs({ ...Inputs, whatisnew: e.target.value })
+                            }
+                            id=""
+                            autoFocus
+                            placeholder="What's new?"
+                            className="fs-content focus:outline-none text-sm 
+                                placeholder:font-normal font-semibold 
+                                text-neutral-500 border-none w-full"
+                        />
+                        {selectedFile && (
+                            <div
+                                className="group relative w-full h-80 rounded-xl border 
+                                    border-neutral-700 overflow-hidden bg-neutral-800"
+                            >
+                                <Image 
+                                    src={prevImageUrl || "" as string}
+                                    alt="Post Image"
+                                    fill
+                                    className="object-contain"
+                                />
+                                <X 
+                                    size={20}
+                                    onClick={() => setSelectedFile(null)}
+                                    className="group-hover:flex hidden cursor-pointer 
+                                        transition-all duration-300 text-neutral-500 
+                                        hover:text-neutral-300 absolute right-2 top-2"
+                                />
+                            </div>
+                        )}
+                        <ul 
+                            className="w-full flex items-center 
+                                gap-5 py-1">
+                                    <input 
+                                        ref={InputFileRef}
+                                        type="file" 
+                                        onChange={HandleUploadImageBtn}
+                                        name="" 
+                                        id=""
+                                        className="hidden"
+                                    />
+                            <Images 
+                                onClick={HandleIconClick} 
+                                size={20} 
+                                className="text-neutral-600 
+                                    hover:text-neutral-500 cursor-pointer"
                             />
-                        </div>
-                        <div className="">
-                            <ul 
-                                className="w-full flex items-center 
-                                    gap-5 py-1">
-                                <Images size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                                <ImagePlay size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                                <Smile size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                                <AlignLeft size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                                <MapPin size={20} className="text-neutral-600 hover:text-neutral-500 cursor-pointer"/>
-                            </ul>
-                        </div>
+                            <ImagePlay 
+                                size={20} 
+                                className="text-neutral-600 
+                                    cursor-not-allowed hover:text-neutral-500"
+                            />
+                            <Smile 
+                                size={20} 
+                                className="text-neutral-600 
+                                    cursor-not-allowed hover:text-neutral-500"
+                            />
+                            <AlignLeft 
+                                size={20} 
+                                className="text-neutral-600 
+                                    cursor-not-allowed hover:text-neutral-500"
+                            />
+                            <MapPin 
+                                size={20} 
+                                className="text-neutral-600 
+                                cursor-not-allowed hover:text-neutral-500"
+                            />
+                        </ul>
                         <div className="flex items-center gap-2">
                             <input 
                                 type="text" 

@@ -9,7 +9,7 @@ import { v4 as uuid4 } from 'uuid';
 type CreatePostContextType = {
   isCreatePostOpen: boolean;
   setIsCreatePostOpen: (isOpen: boolean) => void;
-  HandleCreatePost?: (PostDescription: string, selectedTopic: string) => Promise<void>;
+  HandleCreatePost?: (PostDescription: string, selectedTopic: string, selectedFile:File | null) => Promise<void>;
 };
 
 const CreatePostContext = createContext<CreatePostContextType | undefined>(undefined);
@@ -21,22 +21,36 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
   const Current_User_Email = session?.user?.email;
 
   const Post_UuId = session?.user?.name && session?.user?.name.replace(' ', '-').toLowerCase() + "-" + uuid4();
-  const HandleCreatePost = async (PostDescription: string ,selectedTopic :string) => {
+  const HandleCreatePost = async (PostDescription: string ,selectedTopic :string, selectedFile:File | null) => {
     if (!Current_User_Email) return;
     try {
+      if(selectedFile === null) {
+        alert('File Not Selected');
+        return;
+      }
+      const Form_Data = new FormData();
+      Form_Data.append("file", selectedFile);
+      Form_Data.append('upload_preset', 'ml_default');
+      const res = await fetch("https://api.cloudinary.com/v1_1/dzih5telw/image/upload", {
+        method: "POST",
+        body: Form_Data,
+      });
+      const data = await res.json();
+      const Imgae_Url = data.secure_url;
       const DocRef = doc(db, 'users', Current_User_Email);
       await updateDoc(DocRef, {
         posts: arrayUnion({
           uuid: Post_UuId,
           postowner: Current_User_Email,
-          whatsnew: PostDescription,
-          topic: selectedTopic,
+          whatsnew: PostDescription || "",
+          topic: selectedTopic || "",
           likesCount: 0,
           createdAt: new Date().toISOString(),
+          imagepost: Imgae_Url || "",
         })
       })
     } catch (error) {
-      console.error("Error creating post:", error);
+      alert(error);
     }
   };
   return (
