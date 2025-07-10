@@ -73,6 +73,10 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
           createdAt: new Date().toISOString(),
           imagepost: Imgae_Url || "",
           visibility: postvisibility || "",
+          UserInfo: {
+            name: session?.user?.name,
+            profileimage: session?.user?.image,
+          }
         })
       })
       toast.success(<span>Post created successfuly <Link className="underline" href={`/${Post_UuId}`}>View</Link></span>)

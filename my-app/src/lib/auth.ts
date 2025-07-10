@@ -63,12 +63,12 @@ export const authOptions: AuthOptions = {
       return false; // يمنع تسجيل الدخول لو فشل تسجيل المستخدم
     }
   },
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, user }) {
       if (account && profile) {
         token.id = profile.sub;
         token.email = profile.email;
         token.name = profile.name;
-        token.picture = profile.image || "";
+        token.picture = profile?.picture || profile?.image || user?.image || "";
       }
       return token;
     },

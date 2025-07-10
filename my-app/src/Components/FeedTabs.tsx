@@ -15,15 +15,29 @@ export default function FeedTabs() {
             setActivePath(Pathname);
     }
     },[Pathname])
+    const [showBackground, setShowBackground] = useState(false);
+    useEffect(() => {
+        const HandleScrollY = () => {
+            if(window.scrollY >= 40){
+                setShowBackground(true);
+            }else{
+                setShowBackground(false)
+            }
+        }
+        document.addEventListener('scroll', HandleScrollY);
+        return () => document.removeEventListener('scroll', HandleScrollY);
+    },[])
     if(!showHeader) return null;
     return (
         <div 
-            className="h-14 lg:border-none md:border-none 
+            className={`h-14 lg:border-none md:border-none 
                 border-b-2 border-neutral-700 
                 fixed top-16 md:top-0 lg:top-0 
-                md:left-0 lg:left-0 w-full
+                md:left-0 lg:left-0 w-full z-30
                 flex items-center justify-center 
-                lg:gap-14 md:gap-14 text-sm font-semibold">
+                backdrop-blur-[10px]
+                lg:gap-14 md:gap-14 text-sm font-semibold
+                ${showBackground && "bg-[#0A0A0A]/50"}`}>
             <Link 
                 className={`lg:w-max md:w-max h-full 
                     lg:w-max md:w-max w-full flex 

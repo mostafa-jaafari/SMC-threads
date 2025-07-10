@@ -11,6 +11,7 @@ import FeedTabs from "@/Components/FeedTabs";
 import CreatePost from "@/Components/CreatePost";
 import { AddTopicProvider } from "@/context/AddTopicContext";
 import { Toaster } from "sonner";
+import { UserInfoProvider } from "@/context/UserInfoContext";
 
 const geistSans = Inter({
   variable: "--font-inter-sans",
@@ -31,26 +32,28 @@ export default async function RootLayout({
   const session = await getServerSession();
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} antialiased`}
-      >
-        <Toaster richColors position="top-center" />
-          <ProviderSession>
-            <AddTopicProvider>
-              <CreatePostProvider>
-                <CreatePost />
-                  <MenuProvider>
-                    <FeedTabs />
-                    <section className="w-full min-h-screen flex">
-                      {session && <SideBar />}
-                      {children}
-                      {session && <AddThread />}
-                    </section>
-                  </MenuProvider>
-              </CreatePostProvider>
-            </AddTopicProvider>
-          </ProviderSession>
-      </body>
+      <ProviderSession>
+        <body
+          className={`${geistSans.variable} antialiased`}
+        >
+          <Toaster richColors position="top-center" />
+              <UserInfoProvider>
+                <AddTopicProvider>
+                  <CreatePostProvider>
+                    <CreatePost />
+                      <MenuProvider>
+                        <FeedTabs />
+                        <section className="w-full min-h-screen flex">
+                          {session && <SideBar />}
+                          {children}
+                          {session && <AddThread />}
+                        </section>
+                      </MenuProvider>
+                  </CreatePostProvider>
+                </AddTopicProvider>
+              </UserInfoProvider>
+        </body>
+      </ProviderSession>
     </html>
   );
 }

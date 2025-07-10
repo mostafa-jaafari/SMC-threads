@@ -2,12 +2,12 @@
 
 import { useCreatePost } from "@/context/CreatePostContext";
 import { AlignLeft, CalendarClock, ChevronRight, ImagePlay, Images, MapPin, Smile, X } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import AddTopic from "./AddTopic";
 import { useAddTopic } from "@/context/AddTopicContext";
 import PostPrivacy from "./PostPrivacy";
+import { useUserInfo } from "@/context/UserInfoContext";
 
 
 export default function CreatePost() {
@@ -37,8 +37,8 @@ export default function CreatePost() {
             }
         };
     }, [prevImageUrl]);
-    const session = useSession();
-    const First_Letter = session?.data?.user?.name?.charAt(0).toUpperCase() || "";
+    const { name, profileimage } = useUserInfo();
+    const First_Letter = name.charAt(0).toUpperCase() || "";
     const PostMenuRef = useRef<HTMLElement>(null);
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -75,7 +75,7 @@ export default function CreatePost() {
 
     return (
         <main 
-            className="fixed top-0 left-0 w-full 
+            className="fixed top-0 left-0 z-50 w-full 
                 h-screen bg-black/30 flex justify-center items-center">
             <section 
                 ref={PostMenuRef}
@@ -106,9 +106,9 @@ export default function CreatePost() {
                         <div 
                             className="relative w-12 h-12 flex-shrink-0 rounded-full 
                                 overflow-hidden border border-neutral-600">
-                                    {session?.data?.user?.image ? (
+                                    {profileimage ? (
                                         <Image 
-                                            src={session?.data?.user?.image}
+                                            src={profileimage}
                                             alt="User Profile"
                                             fill
                                             className="object-cover"
@@ -127,9 +127,9 @@ export default function CreatePost() {
                         <div 
                             className="relative w-6 h-6 flex-shrink-0
                                 rounded-full overflow-hidden border border-neutral-600">
-                                    {session?.data?.user?.image ? (
+                                    {profileimage ? (
                                     <Image 
-                                        src={session?.data?.user?.image}
+                                        src={profileimage}
                                         alt="User Profile"
                                         fill
                                         className="object-cover"
@@ -148,7 +148,7 @@ export default function CreatePost() {
                     <div className="space-y-4 w-full">
                         <span className="flex items-end gap-1">
                             <h1 className="text-neutral-300 text-nowrap">
-                                {session?.data?.user?.name}
+                                {name}
                             </h1>
                             <ChevronRight size={18} className="text-neutral-600" />
                             <AddTopic />
