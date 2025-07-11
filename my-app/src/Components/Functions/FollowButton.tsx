@@ -19,6 +19,11 @@ export async function FollowButton(targetEmail: string, currentUserEmail: string
         ? arrayRemove(targetEmail)
         : arrayUnion(targetEmail),
     });
+    await updateDoc(doc(db, 'users', targetEmail), {
+      followers: isFollowing
+        ? arrayRemove(currentUserEmail)
+        : arrayUnion(currentUserEmail),
+    });
 
     toast.success(isFollowing ? "Unfollowed successfully." : "Followed successfully.");
   } catch (err) {

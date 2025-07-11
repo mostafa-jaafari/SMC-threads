@@ -48,3 +48,44 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #777; /* لون الشريط عند المرور */
 }
+
+
+
+/* --------- Loading Glare ---------- */
+/* .glare-loading {
+  width: var(--gh-width);
+  height: var(--gh-height);
+  background: var(--gh-bg);
+  border-radius: var(--gh-br);
+  border: 1px solid var(--gh-border);
+  overflow: hidden;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.glare-loading::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    var(--gh-angle),
+    hsla(0, 0%, 0%, 0) 60%,
+    var(--gh-rgba) 70%,
+    hsla(0, 0%, 0%, 0),
+    hsla(0, 0%, 0%, 0) 100%
+  );
+  background-size: var(--gh-size) var(--gh-size), 100% 100%;
+  background-repeat: no-repeat;
+  background-position: -100% -100%, 0 0;
+  animation: glare-loop var(--gh-duration, 2s) linear infinite;
+}
+
+@keyframes glare-loop {
+  0% {
+    background-position: -100% -100%, 0 0;
+  }
+  100% {
+    background-position: 100% 100%, 0 0;
+  }
+} */

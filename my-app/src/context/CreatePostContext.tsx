@@ -47,29 +47,33 @@ export function CreatePostProvider({ children }: { children: React.ReactNode }) 
       });
       const data = await res.json();
       const Imgae_Url = data.secure_url;
-      const DocRef = doc(db, 'users', Current_User_Email);
-      const AllPostsRef = doc(db, 'global', "posts");
-      await updateDoc(DocRef, {
-        posts: arrayUnion({
-          uuid: Post_UuId,
-          postowner: Current_User_Email,
-          whatsnew: PostDescription || "",
-          topic: selectedTopic || "",
-          likesCount: 0,
-          createdAt: new Date().toISOString(),
-          imagepost: Imgae_Url || "",
-          visibility: postvisibility || "",
-        })
-      })
+      // const DocRef = doc(db, 'users', Current_User_Email);
+      // await updateDoc(DocRef, {
+      //   posts: arrayUnion({
+      //     uuid: Post_UuId,
+      //     postowner: Current_User_Email,
+      //     whatsnew: PostDescription || "",
+      //     topic: selectedTopic || "",
+      //     likes: [],
+      //     createdAt: new Date().toISOString(),
+      //     imagepost: Imgae_Url || "",
+      //     visibility: postvisibility || "",
+      //     UserInfo: {
+      //       name: session?.user?.name,
+      //       profileimage: session?.user?.image,
+      //     }
+      //   })
+      // })
       setIsLoadingCreatePost(false);
       setIsFinishCreatingPost(true);
+      const AllPostsRef = doc(db, 'global', "posts");
       await updateDoc(AllPostsRef, {
         posts: arrayUnion({
           uuid: Post_UuId,
           postowner: Current_User_Email,
           whatsnew: PostDescription || "",
           topic: selectedTopic || "",
-          likesCount: 0,
+          likes: [],
           createdAt: new Date().toISOString(),
           imagepost: Imgae_Url || "",
           visibility: postvisibility || "",

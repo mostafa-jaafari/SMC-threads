@@ -14,6 +14,7 @@ interface Post {
     createdAt: Timestamp;
     imagepost: string;
     email: string;
+    uuid: string;
 }
 
 export default function PostsContainer() {
@@ -81,6 +82,7 @@ export default function PostsContainer() {
                             createdAt={post?.createdAt}
                             whatsnew={post?.whatsnew}
                             imagepost={post?.imagepost}
+                            Postuuid={post?.uuid}
                         />
                     )
                 })}

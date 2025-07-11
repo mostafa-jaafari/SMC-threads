@@ -2,12 +2,13 @@
 import Image from "next/image";
 import { getRelativeTime } from "./Functions/CalculateDateDifference";
 import { doc, onSnapshot, Timestamp } from "firebase/firestore";
-import { Ellipsis, Heart, MessageCircle, Navigation, Plus, Repeat2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Bookmark, Bug, ChevronRight, EarOff, Ellipsis, EyeOff, Heart, Link2, MessageCircle, Navigation, Plus, Repeat2, UserMinus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { db } from "@/Firebase";
 import { useSession } from "next-auth/react";
 import { FollowButton } from "./Functions/FollowButton";
 import Link from "next/link";
+import { LikeToggleBtn } from "./Functions/LikeToggleBtn";
 
 
 interface PostCardProps {
@@ -15,8 +16,47 @@ interface PostCardProps {
     createdAt: Timestamp;
     whatsnew: string;
     imagepost: string;
+    Postuuid: string;
 }
-export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } : PostCardProps) {
+const Options_Links = [
+    {
+        label: "Add to feed",
+        href: "/",
+        icon: ChevronRight,
+        isLink: false,
+    },{
+        label: "Save",
+        href: "/",
+        icon: Bookmark,
+        isLink: true,
+    },{
+        label: "Not interested",
+        href: "/",
+        icon: EyeOff,
+        isLink: true,
+    },{
+        label: "Mute",
+        href: "/",
+        icon: EarOff,
+        isLink: true,
+    },{
+        label: "Unfollow",
+        href: "/",
+        icon: UserMinus,
+        isLink: true,
+    },{
+        label: "Report",
+        href: "/",
+        icon: Bug,
+        isLink: true,
+    },{
+        label: "Copy link",
+        href: "/",
+        icon: Link2,
+        isLink: true,
+    },
+];
+export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Postuuid } : PostCardProps) {
     const Result = getRelativeTime(createdAt);
     const Current_User = useSession();
     const [userDetails, setUserDetails] = useState<any | null>(null);
@@ -47,10 +87,37 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } :
     }, [PostOwner, Current_User]);
 
     const [iSNameHovered, setIsNameHovered] = useState<boolean>(false);
+    const [iSPostOptions, setIsPostOptions] = useState(false);
+    const OptionMenuRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        const HideOptionMenu = (e: MouseEvent) => {
+            if(OptionMenuRef.current && !OptionMenuRef.current.contains(e.target as Node)){
+                setIsPostOptions(false);
+            }
+        }
+        document.addEventListener('mousedown', HideOptionMenu);
+        return () => removeEventListener('mousedown', HideOptionMenu);
+    },[])
+    const [isLiked, setIsLiked] = useState(false);
+    const [likesCount, setLikesCount] = useState(0);
+    useEffect(() => {
+        const CurrentUserEmail = Current_User?.data?.user?.email;
+        const unsubscribe = onSnapshot(doc(db, "global", "posts"), (snapshot) => {
+            const data = snapshot.data();
+            const Posts = data?.posts || [];
+            setIsLiked(Posts?.likes.includes(CurrentUserEmail));
+            setLikesCount(Posts.length)
+        })
+        return () => unsubscribe();
+    }, [Current_User?.data?.user?.email, PostOwner, Postuuid]);
+    const handleLike = async () => {
+        if(!Current_User?.data?.user?.email) return;
+        await LikeToggleBtn(Current_User?.data?.user?.email, PostOwner, Postuuid);
+    };
     return (
         <main
             className="w-full flex items-start
-                gap-4 p-4 border-b border-neutral-800"
+                gap-4 p-6 border-b border-neutral-800"
         >
             <div className="relative">
                 <div 
@@ -81,7 +148,10 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } :
                 className="w-full"
             >
                 <div
-                    className="relative flex items-center gap-2"
+                    className="flex items-center gap-1"
+                >
+                <div
+                    className="relative w-max"
                     onMouseEnter={() => setIsNameHovered(true)}
                     onMouseLeave={() => setIsNameHovered(false)}
                     >
@@ -90,8 +160,6 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } :
                     >
                         {userDetails?.name}
                     </h1>
-
-                    <span className="text-neutral-500 text-sm">{Result}</span>
 
                     {iSNameHovered && (
                         <div
@@ -145,6 +213,8 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } :
                         </div>
                     )}
                     </div>
+                    <span className="text-neutral-500 text-sm">{Result}</span>
+                </div>
                 <p className="mb-4 mt-2">
                     {whatsnew}
                 </p>
@@ -158,9 +228,16 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } :
                 <div
                     className="w-full flex items-center gap-6 pt-4"
                 >
-                    <Heart 
-                        size={20}
-                    />
+                    <span
+                        className="flex gap-1"
+                    >
+                        <Heart 
+                            size={20}
+                            fill={isLiked ? "red" : "none"}
+                            color={isLiked ? "red" : "currentColor"}
+                            onClick={handleLike}
+                        /> {likesCount}
+                    </span>
                     <MessageCircle 
                         size={20}
                     />
@@ -172,10 +249,63 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } :
                     />
                 </div>
             </section>
-            <Ellipsis
-                size={24}
-                className="text-neutral-500 hover:text-neutral-600 cursor-pointer"
-            />
+            <div
+                className="relative"
+            >
+                <Ellipsis
+                    onClick={() => setIsPostOptions(!iSPostOptions)}
+                    size={24}
+                    className="text-neutral-500 hover:text-neutral-600 cursor-pointer"
+                />
+                {iSPostOptions && (
+                    <div
+                        ref={OptionMenuRef}
+                        className="absolute top-6 right-0 min-w-68 
+                            min-h-10 p-4 rounded-xl bg-black border 
+                            border-neutral-900 list-none flex flex-col justify-center items-start gap-1"
+                    >
+                        {Options_Links.map((nav, index) => {
+                            if(!nav.isLink){
+                                return (
+                                    <div
+                                        key={index}
+                                        className="w-full pb-1 border-b border-neutral-900"
+                                    >
+                                        <li
+                                            className="text-neutral-300 cursor-pointer flex items-center justify-between w-full
+                                                p-2 rounded-xl hover:bg-neutral-900/40"
+                                        >
+                                            {nav.label}
+                                            <nav.icon 
+                                                size={20}
+                                            />
+                                    </li>
+                                    </div>
+                                )
+                            }else{
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`w-full
+                                        ${nav.label.toLowerCase() === "not interested" || nav.label.toLowerCase() === "report" ? "pb-1 border-b border-neutral-900" : ""}`}
+                                    >
+                                        <Link
+                                            href={nav.href}
+                                            className="text-neutral-300 flex items-center justify-between w-full
+                                                p-2 rounded-xl hover:bg-neutral-900/40"
+                                        >
+                                            {nav.label}
+                                            <nav.icon 
+                                                size={20}
+                                            />
+                                        </Link>
+                                    </div>
+                                )
+                            }
+                        })}
+                    </div>
+                )}
+            </div>
         </main>
     )
 }
