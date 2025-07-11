@@ -5,6 +5,8 @@ import { doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { Ellipsis, Heart, MessageCircle, Navigation, Plus, Repeat2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { db } from "@/Firebase";
+import { useSession } from "next-auth/react";
+import { FollowButton } from "./Functions/FollowButton";
 
 
 interface PostCardProps {
@@ -15,7 +17,8 @@ interface PostCardProps {
 }
 export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } : PostCardProps) {
     const Result = getRelativeTime(createdAt);
-    const [userDetails, setUserDetails] = useState<any>(null);
+    const Current_User = useSession();
+    const [userDetails, setUserDetails] = useState<any | null>(null);
     useEffect(() => {
         const unsubscribe = onSnapshot(doc(db, 'users', PostOwner), (snapshot) => {
             if(snapshot.exists()){
@@ -47,6 +50,12 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner } :
                     >
                         <Plus
                             size={14}
+                            className={PostOwner.toLowerCase() === Current_User?.data?.user?.email ? "hidden" : "flex"}
+                            onClick={async () => {
+                            const currentUserEmail = Current_User?.data?.user?.email;
+                            if (!currentUserEmail) return;
+                            await FollowButton(PostOwner, currentUserEmail);
+                            }}
                         />
                     </span>
             </div>
