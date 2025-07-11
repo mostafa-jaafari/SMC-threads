@@ -8,15 +8,6 @@ import { doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "@/Firebase";
 import { useUserInfo } from "@/context/UserInfoContext";
 
-
-interface PostsContainerProps {
-    session: {
-        user: {
-            image?: string;
-            name?: string;
-        };
-    };
-}
 interface Post {
     postowner: string;
     whatsnew: string;
@@ -25,10 +16,10 @@ interface Post {
     email: string;
 }
 
-export default function PostsContainer({ session } : PostsContainerProps) {
+export default function PostsContainer() {
     const { setIsCreatePostOpen } = useCreatePost();
     const params = useParams();
-    const { email, name, profileimage } = useUserInfo()
+    const { name, profileimage } = useUserInfo()
     const Page_Id = params.pageid;
     const [allPosts, setAllPosts] = useState<Post[]>([]);
     useEffect(() => {
