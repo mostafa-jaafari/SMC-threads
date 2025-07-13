@@ -12,6 +12,7 @@ import CreatePost from "@/Components/CreatePost";
 import { AddTopicProvider } from "@/context/AddTopicContext";
 import { Toaster } from "sonner";
 import { UserInfoProvider } from "@/context/UserInfoContext";
+import { CommentsContainer } from "@/Components/ComentsContainer";
 
 const geistSans = Inter({
   variable: "--font-inter-sans",
@@ -46,6 +47,7 @@ export default async function RootLayout({
                         <section className="w-full min-h-screen flex">
                           {session && <SideBar />}
                           {children}
+                          <CommentsContainer />
                           {session && <AddThread />}
                         </section>
                       </MenuProvider>

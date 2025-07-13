@@ -251,7 +251,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                     className="w-full flex items-center gap-6 pt-4"
                 >
                     <span
-                        className="flex gap-1"
+                        className="flex gap-1 cursor-pointer hover:scale-105 transition-all duration-200"
                     >
                         <Heart 
                             size={20}
@@ -261,6 +261,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                         /> {likesCount}
                     </span>
                     <MessageCircle 
+                        // onClick={() => }
                         size={20}
                     />
                     <Repeat2

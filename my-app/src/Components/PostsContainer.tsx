@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "@/Firebase";
 import { useUserInfo } from "@/context/UserInfoContext";
+import PostCardPulseLoading from "./PostCardPulseLoading";
 
 interface Post {
     postowner: string;
@@ -23,16 +24,24 @@ export default function PostsContainer() {
     const { name, profileimage } = useUserInfo()
     const Page_Id = params.pageid;
     const [allPosts, setAllPosts] = useState<Post[]>([]);
+    const [isLoadingPosts, setIsLoadingPosts] = useState(true);
     useEffect(() => {
-        if (Page_Id !== "following") {
+        setIsLoadingPosts(true)
+        try{
+            if (Page_Id !== "following") {
             const DocRef = doc(db, 'global', "posts");
             const unsubscribe = onSnapshot(DocRef, (snapshot) => {
                 const data = snapshot.data();
                 const posts = data?.posts;
                 setAllPosts(posts)
+                setIsLoadingPosts(false);
             });
             return () => unsubscribe();
         }
+    }catch(err){
+        console.log(err);
+        setIsLoadingPosts(false);
+    }
     }, [Page_Id]);
     return (
         <main className="w-full">
@@ -74,7 +83,11 @@ export default function PostsContainer() {
                 </button>
             </div>
             <section>
-                {allPosts?.map((post, index) => {
+                {isLoadingPosts ? (
+                        <PostCardPulseLoading />
+                    )
+                    :
+                    allPosts?.map((post, index) => {
                     return (
                         <PostCard
                             key={index}
