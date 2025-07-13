@@ -8,7 +8,7 @@ import { db } from "@/Firebase";
 import { useSession } from "next-auth/react";
 import { FollowButton } from "./Functions/FollowButton";
 import Link from "next/link";
-import { LikeToggleBtn } from "./Functions/LikeToggleBtn";
+import { LikeToggleBtn, PostTypes } from "./Functions/LikeToggleBtn";
 
 
 interface PostCardProps {
@@ -56,14 +56,20 @@ const Options_Links = [
         isLink: true,
     },
 ];
+
+interface UserDetailsTypes {
+    profileimage: string;
+    name: string;
+    following: string[];
+}
 export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Postuuid } : PostCardProps) {
     const Result = getRelativeTime(createdAt);
     const Current_User = useSession();
-    const [userDetails, setUserDetails] = useState<any | null>(null);
+    const [userDetails, setUserDetails] = useState<UserDetailsTypes | null>(null);
     useEffect(() => {
         const unsubscribe = onSnapshot(doc(db, 'users', PostOwner), (snapshot) => {
             if(snapshot.exists()){
-                setUserDetails(snapshot.data());
+                setUserDetails(snapshot.data() as UserDetailsTypes);
             }else{
                 setUserDetails(null);
             }
@@ -101,18 +107,34 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
     const [isLiked, setIsLiked] = useState(false);
     const [likesCount, setLikesCount] = useState(0);
     useEffect(() => {
-        const CurrentUserEmail = Current_User?.data?.user?.email;
+        const currentUserEmail = Current_User?.data?.user?.email;
+        if (!currentUserEmail) return;
+
         const unsubscribe = onSnapshot(doc(db, "global", "posts"), (snapshot) => {
-            const data = snapshot.data();
-            const Posts = data?.posts || [];
-            setIsLiked(Posts?.likes.includes(CurrentUserEmail));
-            setLikesCount(Posts.length)
-        })
+            if (!snapshot.exists()) return;
+            
+            const posts = snapshot.data()?.posts || [];
+            const currentPost = posts.find((p: PostTypes) => p?.postowner === PostOwner && p?.uuid === Postuuid);
+            
+            if (currentPost) {
+                const likes = currentPost.likes || [];
+                setIsLiked(likes.includes(currentUserEmail));
+                setLikesCount(likes.length);
+            }
+        });
+
         return () => unsubscribe();
     }, [Current_User?.data?.user?.email, PostOwner, Postuuid]);
+    
     const handleLike = async () => {
-        if(!Current_User?.data?.user?.email) return;
-        await LikeToggleBtn(Current_User?.data?.user?.email, PostOwner, Postuuid);
+        const currentUserEmail = Current_User?.data?.user?.email;
+        if (!currentUserEmail) return;
+        
+        const result = await LikeToggleBtn(currentUserEmail, PostOwner, Postuuid);
+        if (result) {
+            setIsLiked(result.isLiked);
+            setLikesCount(result.likesCount);
+        }
     };
     return (
         <main
@@ -123,7 +145,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                 <div 
                     className="relative overflow-hidden w-10 h-10 rounded-full border">
                         <Image 
-                            src={userDetails?.profileimage}
+                            src={userDetails?.profileimage as string}
                             alt="Profile Image"
                             fill
                             className="object-cover"
@@ -175,7 +197,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                                 className="relative border w-16 h-16 
                                     rounded-full overflow-hidden">
                                 <Image 
-                                    src={userDetails?.profileimage}
+                                    src={userDetails?.profileimage as string}
                                     alt="Profile Image"
                                     fill
                                     className="object-cover"

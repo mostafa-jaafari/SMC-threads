@@ -1,7 +1,12 @@
 import { db } from "@/Firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { toast } from "sonner";
 
+
+
+export interface PostTypes {
+    uuid: string;
+    postowner: string;
+}
 export async function LikeToggleBtn(
     currentUser: string,
     PostOwner: string,
@@ -10,62 +15,37 @@ export async function LikeToggleBtn(
     if (!currentUser) return null;
     
     try {
-        const DocRef = doc(db, 'global', 'posts');
-        const DocSnap = await getDoc(DocRef);
+        const docRef = doc(db, 'global', 'posts');
+        const docSnap = await getDoc(docRef);
         
-        if (!DocSnap.exists()) {
-            console.error("Posts document does not exist");
-            return null;
-        }
+        if (!docSnap.exists()) return null;
         
-        const DocData = DocSnap.data();
-        const Posts = DocData?.posts || [];
+        const posts = docSnap.data()?.posts || [];
+        const postIndex = posts.findIndex((p: PostTypes) => p?.postowner === PostOwner && p?.uuid === Postuuid);
         
-        // Find the specific post
-        const postIndex = Posts.findIndex((post) => 
-            post?.postowner === PostOwner && post?.uuid === Postuuid
-        );
+        if (postIndex === -1) return null;
         
-        if (postIndex === -1) {
-            console.error("Post not found");
-            return null;
-        }
+        const post = posts[postIndex];
+        const likes = post.likes || [];
+        const isLiked = likes.includes(currentUser);
         
-        const targetPost = Posts[postIndex];
-        const currentLikes = targetPost.likes || [];
-        const isLiked = currentLikes.includes(currentUser);
+        // Toggle like
+        const updatedLikes = isLiked 
+            ? likes.filter((user: string) => user !== currentUser)
+            : [...likes, currentUser];
         
-        // Update the likes array
-        let updatedLikes;
-        if (isLiked) {
-            // Remove like
-            updatedLikes = currentLikes.filter(user => user !== currentUser);
-        } else {
-            // Add like
-            updatedLikes = [...currentLikes, currentUser];
-        }
+        // Update post
+        posts[postIndex] = { ...post, likes: updatedLikes };
         
-        // Update the post in the array
-        Posts[postIndex] = {
-            ...targetPost,
-            likes: updatedLikes
-        };
-        
-        // Update the document
-        await updateDoc(DocRef, {
-            posts: Posts
-        });
-        
-        toast.success(isLiked ? "Unliked" : "Liked");
-        
+        await updateDoc(docRef, { posts });
+                
         return {
             likesCount: updatedLikes.length,
             isLiked: !isLiked
         };
         
     } catch (error) {
-        console.error("LikeToggleBtn error:", error);
-        toast.error("Failed to toggle like");
+        console.error("Like toggle error:", error);
         return null;
     }
 }
