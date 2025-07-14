@@ -64,6 +64,7 @@ export default function CreatePost() {
                 if(!setIsFinishCreatingPost) return;
             setIsFinishCreatingPost(false);
         }
+        
     },[isLoadingCreatePost, isFinishCreatingPost, setIsCreatePostOpen, setIsFinishCreatingPost, setSelectedTopic])
     const [isVisibilityMenuOpen, setIsVisibilityMenuOpen] = useState(false);
     const [selectedVisibility, setSelectedVisibility] = useState("anyone");
