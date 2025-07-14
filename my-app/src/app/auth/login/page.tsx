@@ -1,5 +1,6 @@
 import BlurText from "@/Components/TextAnimations/BlurText";
 import Login_Form from "./Login_Form";
+import Image from "next/image";
 
 
 
@@ -7,10 +8,12 @@ import Login_Form from "./Login_Form";
 export default function page(){
     return (
         <main className="space-y-6 w-full min-h-screen flex flex-col items-center py-20">
-            <img 
+            <Image 
                 src="/PNG-LOGO-WHITE.png"
                 alt="SMC Threads Logo"
-                className="w-[120px] shadow-inner-overlay shadow-yellow-600"
+                width={100}
+                height={100}
+                className="shadow-inner-overlay shadow-yellow-600"
             />
             <div className="text-center">
                 <BlurText

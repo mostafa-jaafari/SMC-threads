@@ -29,7 +29,7 @@ export default function AddTopic() {
         }
         document.addEventListener('mousedown', HideMenu);
         return () => document.removeEventListener('mousedown', HideMenu);
-    }, [])
+    }, [setOpenTopicMenu])
     return (
         <section>
             {isOther ? (

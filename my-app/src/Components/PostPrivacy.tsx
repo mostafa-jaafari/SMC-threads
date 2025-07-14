@@ -27,7 +27,7 @@ export default function PostPrivacy({ setIsVisibilityMenuOpen, isVisibilityMenuO
     };
     document.addEventListener('mousedown', HideMenu);
     return () => document.removeEventListener('mousedown', HideMenu);
-  }, []);
+  }, [setIsVisibilityMenuOpen]);
 
   if(!selectedVisibility) return;
   return isVisibilityMenuOpen ? (

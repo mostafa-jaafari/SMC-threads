@@ -10,7 +10,6 @@ interface PageProps {
     }
 export default async function page({ params } : PageProps) {
     const Page_Id = params.pageid;
-    const session = await getServerSession();
     let content;
     switch (Page_Id) {
         case '':
@@ -25,7 +24,6 @@ export default async function page({ params } : PageProps) {
                         className="lg:w-1/2 md:w-[70%] sm:w-[80%] w-[90%] bg-neutral-900 border border-neutral-800 md:w-[600px]lg:w-[600px] 
                           overflow-hidden rounded-3xl">
                         <PostsContainer
-                          session={session ? { user: { image: session.user?.image ?? undefined, name: session.user?.name ?? undefined } } : { user: { image: undefined, name: undefined } }}
                         />
                       </div>
                     </section>

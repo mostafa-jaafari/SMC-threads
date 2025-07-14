@@ -153,7 +153,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
   if (PostSelected) {
     setCommentsLength(PostSelected.comments?.length || 0);
   }
-}, [allPosts, Postuuid]);
+}, [allPosts, Postuuid, PostSelected]);
     return (
         <main
             className="w-full flex items-start

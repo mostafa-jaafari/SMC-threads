@@ -40,6 +40,7 @@ export default function CreatePost() {
     const { name, profileimage } = useUserInfo();
     const First_Letter = name.charAt(0).toUpperCase() || "";
     const PostMenuRef = useRef<HTMLElement>(null);
+    const { isCreatePostOpen, setIsCreatePostOpen, HandleCreatePost, isLoadingCreatePost, isFinishCreatingPost, setIsFinishCreatingPost } = useCreatePost();
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (PostMenuRef.current && !PostMenuRef.current.contains(event.target as Node)) {
@@ -51,8 +52,7 @@ export default function CreatePost() {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    },[])
-    const { isCreatePostOpen, setIsCreatePostOpen, HandleCreatePost, isLoadingCreatePost, isFinishCreatingPost, setIsFinishCreatingPost } = useCreatePost();
+    },[setIsCreatePostOpen])
     useEffect(() => {
         if(isFinishCreatingPost){
             setPrevImageUrl(null);
@@ -64,7 +64,7 @@ export default function CreatePost() {
                 if(!setIsFinishCreatingPost) return;
             setIsFinishCreatingPost(false);
         }
-    },[isLoadingCreatePost, isFinishCreatingPost])
+    },[isLoadingCreatePost, isFinishCreatingPost, setIsCreatePostOpen, setIsFinishCreatingPost, setSelectedTopic])
     const [isVisibilityMenuOpen, setIsVisibilityMenuOpen] = useState(false);
     const [selectedVisibility, setSelectedVisibility] = useState("anyone");
     if(!isCreatePostOpen) return null;

@@ -56,7 +56,7 @@ export function CommentsContainer() {
         };
         document.addEventListener('mousedown', HideCommentsMenu);
         return () => removeEventListener('mousedown', HideCommentsMenu);
-    }, []);
+    }, [setIsOpenComments]);
 
     const { email, name, profileimage } = useUserInfo();
     const [textComment, setTextComment] = useState('');
