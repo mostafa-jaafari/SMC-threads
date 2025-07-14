@@ -2,12 +2,7 @@ import HeaderMobile from "@/Components/HeaderMobile";
 import PostsContainer from "@/Components/PostsContainer";
 
 
-interface PageProps {
-        params: {
-            pageid: string;
-        }
-    }
-export default async function page({ params } : PageProps) {
+export default async function page({ params }: { params: { pageid: string } }) {
     const Page_Id = params.pageid;
     let content;
     switch (Page_Id) {
