@@ -1,9 +1,8 @@
 import HeaderMobile from "@/Components/HeaderMobile";
 import PostsContainer from "@/Components/PostsContainer";
 
-
-export default async function page({ params }: { params: { pageid: string } }) {
-    const Page_Id = params.pageid;
+export default async function page({ params }: { params: Promise<{ pageid: string }> }) {
+    const { pageid: Page_Id } = await params;
     let content;
     switch (Page_Id) {
         case '':
@@ -15,16 +14,16 @@ export default async function page({ params }: { params: { pageid: string } }) {
                         items-center lg:pt-16 md:pt-16 pt-20
                         ">
                       <div 
-                        className="lg:w-1/2 md:w-[70%] sm:w-[80%] w-[90%] bg-neutral-900 border border-neutral-800 md:w-[600px]lg:w-[600px] 
+                        className="lg:w-1/2 md:w-[70%] sm:w-[80%] w-[90%] bg-neutral-900 border border-neutral-800 md:w-[600px] lg:w-[600px] 
                           overflow-hidden rounded-3xl">
                         <PostsContainer
                         />
                       </div>
                     </section>
             break;
-            default:
-                break;
-        }
+        default:
+            break;
+    }
     return (
         <main className="w-full">
             <HeaderMobile />
