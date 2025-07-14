@@ -3,20 +3,41 @@
 import { useComment } from "@/context/CommentsContext";
 import { useUserInfo } from "@/context/UserInfoContext";
 import { db } from "@/Firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { ArrowUp, EllipsisVertical, Heart, MessageCircle, Navigation, Repeat2 } from "lucide-react";
+import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { ArrowUp, EllipsisVertical, Heart, MessageCircle, Navigation, Plus, Repeat2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Post } from "./PostsContainer";
 import { v4 as uuid4 } from 'uuid';
 import { toast } from "sonner";
 import { getRelativeTime } from "./Functions/CalculateDateDifference";
+import { UserDetailsTypes } from "./PostCard";
+import { FollowButton } from "./Functions/FollowButton";
+import { useSession } from "next-auth/react";
 
 
 export function CommentsContainer() {
-    const { isOpenComments, setIsOpenComments, postUuid, PostSelected } = useComment();
+    const Current_User = useSession();
+    const { isOpenComments, setIsOpenComments, postUuid, PostSelected, postOwner } = useComment();
     const CommentMenuRef = useRef<HTMLDivElement | null>(null);
     const [showMenu, setShowMenu] = useState(false);
+
+    const [userDetails, setUserDetails] = useState<UserDetailsTypes | null>(null);
+    useEffect(() => {
+        if(!postOwner) return;
+        const unsubscribe = onSnapshot(doc(db, 'users', postOwner), (snapshot) => {
+            if(snapshot.exists()){
+                try{
+                    setUserDetails(snapshot.data() as UserDetailsTypes);
+                }catch(err){
+                    alert(err)
+                }
+            }else{
+                setUserDetails(null);
+            }
+        })
+        return () => unsubscribe();
+    },[postOwner]);
 
     useEffect(() => {
         if (isOpenComments) {
@@ -79,13 +100,26 @@ export function CommentsContainer() {
             await updateDoc(DocRef, { posts: updatedPosts });
 
             setTextComment('');
-            toast.success('Comment added!');
         } catch (error) {
             console.error("Failed to add comment:", error);
             toast.error("Error adding comment.");
         }
     };
     
+    const [isFollowing, setIsFollowing] = useState(false);
+    useEffect(() => {
+        const currentUserEmail = Current_User?.data?.user?.email;
+        if (!currentUserEmail || currentUserEmail === postOwner) return;
+
+        const unsubscribe = onSnapshot(doc(db, "users", currentUserEmail), (docSnap) => {
+            if (docSnap.exists()) {
+            const following = docSnap.data()?.following || [];
+            setIsFollowing(following.includes(postOwner));
+            }
+        });
+
+        return () => unsubscribe();
+    }, [postOwner, Current_User]);
     const ResultDate = getRelativeTime({ createdAt: PostSelected?.createdAt });
     return (
         <main
@@ -119,20 +153,38 @@ export function CommentsContainer() {
                             className="flex items-center gap-2"
                         >
                             <div
+                                className="relative"
+                            >
+                                <div
                                 className="relative w-10 h-10 rounded-full 
                                     border overflow-hidden"
-                            >
-                                <Image 
-                                    src={profileimage as string || ""}
-                                    alt=""
-                                    fill
-                                    className="object-cover"
-                                />
+                                >
+                                    <Image 
+                                        src={userDetails?.profileimage as string || ""}
+                                        alt=""
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <span
+                                    className="absolute bottom-0 right-0
+                                        bg-white text-black rounded-full cursor-pointer"
+                                >
+                                    <Plus
+                                        size={14}
+                                        className={postOwner.toLowerCase() === Current_User?.data?.user?.email ? "hidden" : isFollowing ? "hidden" : "flex"}
+                                        onClick={async () => {
+                                        const currentUserEmail = Current_User?.data?.user?.email;
+                                        if (!currentUserEmail) return;
+                                        await FollowButton(postOwner, currentUserEmail);
+                                        }}
+                                    />
+                                </span>
                             </div>
                             <span
                                 className="flex items-center gap-2"
                             >
-                                <h1>{name}</h1>
+                                <h1>{userDetails?.name}</h1>
                                 <p
                                     className="text-neutral-500 text-sm"
                                 >{ResultDate}</p>
@@ -141,6 +193,13 @@ export function CommentsContainer() {
                         <EllipsisVertical 
                             size={20}/>
                     </div>
+                        <div
+                            className="px-2 text-neutral-400"
+                        >
+                            <p>
+                                {PostSelected?.whatsnew as string}
+                            </p>
+                        </div>
                     <div
                         className="w-full flex items-center justify-center"
                     >
@@ -159,7 +218,7 @@ export function CommentsContainer() {
                         <div 
                             key={comment?.uuid}
                             className={`flex items-start gap-4 p-4 border-neutral-800
-                                ${index === PostSelected?.comments?.length - 1 ? "border-b" : ""}`}>
+                                ${index !== PostSelected?.comments?.length - 1 && "border-b"}`}>
                             <div className="relative w-10 h-10 rounded-full 
                                 overflow-hidden border flex-shrink-0">
                                 <Image 

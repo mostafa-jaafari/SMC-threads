@@ -23,22 +23,26 @@ interface CommentsContainerProps {
     isOpenComments: boolean;
     setPostUuid: (postuuid: string) => void;
     postUuid: string;
-    // setCommentsLength: (Length: number) => void;
+    postOwner: string;
+    setPostOwner: (owner: string) => void;
     commentsLength: number;
-    // setAllPosts: (Posts: PostComments[]) => void;
     PostSelected: PostComments | undefined;
+    isLoadingComments: boolean;
 }
 const CommentContext = createContext<CommentsContainerProps | null>(null);
 export function CommentContextProvider({ children } : {children: React.ReactNode;}){
     const [isOpenComments, setIsOpenComments] = useState<boolean>(false);
     const [postUuid, setPostUuid] = useState('');
+    const [postOwner, setPostOwner] = useState('');
     const [commentsLength, setCommentsLength] = useState(0)
     const [allPosts, setAllPosts] = useState<PostComments[] | []>([]);
     const PostSelected = allPosts.find((post: Post) => post?.uuid === postUuid);
+    const [isLoadingComments, setIsLoadingComments] = useState(true);
     useEffect(() => {
         const unsubscribe = onSnapshot(doc(db, 'global', "posts"), (snapshot) => {
             const posts = snapshot?.data()?.posts || [];
             setAllPosts(posts);
+            setIsLoadingComments(false);
         })
         return () => unsubscribe();
     },[])
@@ -49,7 +53,7 @@ export function CommentContextProvider({ children } : {children: React.ReactNode
         }
     }, [allPosts, postUuid]);
     return (
-        <CommentContext.Provider value={{ isOpenComments, setIsOpenComments, setPostUuid, postUuid, PostSelected, commentsLength }}>
+        <CommentContext.Provider value={{ isOpenComments, setIsOpenComments, postOwner, setPostOwner, setPostUuid, postUuid, PostSelected, commentsLength, isLoadingComments }}>
             {children}
         </CommentContext.Provider>
     )

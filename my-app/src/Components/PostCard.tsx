@@ -59,7 +59,7 @@ const Options_Links = [
     },
 ];
 
-interface UserDetailsTypes {
+export interface UserDetailsTypes {
     profileimage: string;
     name: string;
     following: string[];
@@ -138,7 +138,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
             setLikesCount(result.likesCount);
         }
     };
-    const { setIsOpenComments, setPostUuid } = useComment();
+    const { setIsOpenComments, setPostUuid, setPostOwner } = useComment();
     const [commentsLength, setCommentsLength] = useState(0)
     const [allPosts, setAllPosts] = useState<PostComments[] | []>([]);
     const PostSelected = allPosts.find((post: Post) => post?.uuid === Postuuid);
@@ -222,7 +222,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                                 />
                             </div>
                         </div>
-                        <p className="text-neutral-500">{userDetails?.following?.length} followers</p>
+                        <p className="text-neutral-500">{userDetails?.following?.length || 0} followers</p>
                             {PostOwner === Current_User?.data?.user?.email ? (
                                 <button
                                     className="w-full flex border border-neutral-900 
@@ -286,6 +286,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                             onClick={() => {
                                 setIsOpenComments(true);
                                 setPostUuid(Postuuid);
+                                setPostOwner(PostOwner)
                             }}
                         /> {commentsLength !== 0 && commentsLength}
                     </span>
