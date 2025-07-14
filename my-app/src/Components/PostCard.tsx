@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { FollowButton } from "./Functions/FollowButton";
 import Link from "next/link";
 import { LikeToggleBtn, PostTypes } from "./Functions/LikeToggleBtn";
+import { useComment } from "@/context/CommentsContext";
 
 
 interface PostCardProps {
@@ -136,6 +137,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
             setLikesCount(result.likesCount);
         }
     };
+    const { setIsOpenComments, setPostUuid } = useComment();
     return (
         <main
             className="w-full flex items-start
@@ -261,7 +263,11 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                         /> {likesCount}
                     </span>
                     <MessageCircle 
-                        // onClick={() => }
+                        className="cursor-pointer"
+                        onClick={() => {
+                            setIsOpenComments(true);
+                            setPostUuid(Postuuid);
+                        }}
                         size={20}
                     />
                     <Repeat2

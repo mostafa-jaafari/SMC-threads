@@ -13,6 +13,7 @@ import { AddTopicProvider } from "@/context/AddTopicContext";
 import { Toaster } from "sonner";
 import { UserInfoProvider } from "@/context/UserInfoContext";
 import { CommentsContainer } from "@/Components/ComentsContainer";
+import { CommentContextProvider } from "@/context/CommentsContext";
 
 const geistSans = Inter({
   variable: "--font-inter-sans",
@@ -38,22 +39,24 @@ export default async function RootLayout({
           className={`${geistSans.variable} antialiased`}
         >
           <Toaster richColors position="top-center" />
-              <UserInfoProvider>
-                <AddTopicProvider>
-                  <CreatePostProvider>
-                    <CreatePost />
-                      <MenuProvider>
-                        <FeedTabs />
-                        <section className="w-full min-h-screen flex">
-                          {session && <SideBar />}
-                          {children}
-                          <CommentsContainer />
-                          {session && <AddThread />}
-                        </section>
-                      </MenuProvider>
-                  </CreatePostProvider>
-                </AddTopicProvider>
-              </UserInfoProvider>
+              <CommentContextProvider>
+                <UserInfoProvider>
+                  <AddTopicProvider>
+                    <CreatePostProvider>
+                      <CreatePost />
+                        <MenuProvider>
+                          <FeedTabs />
+                          <section className="w-full min-h-screen flex">
+                            {session && <SideBar />}
+                            {children}
+                            <CommentsContainer />
+                            {session && <AddThread />}
+                          </section>
+                        </MenuProvider>
+                    </CreatePostProvider>
+                  </AddTopicProvider>
+                </UserInfoProvider>
+              </CommentContextProvider>
         </body>
       </ProviderSession>
     </html>
