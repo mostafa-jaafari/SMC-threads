@@ -1,6 +1,5 @@
 import HeaderMobile from "@/Components/HeaderMobile";
 import PostsContainer from "@/Components/PostsContainer";
-import { getServerSession } from "next-auth";
 
 
 interface PageProps {
