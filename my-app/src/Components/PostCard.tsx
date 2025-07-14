@@ -9,7 +9,8 @@ import { useSession } from "next-auth/react";
 import { FollowButton } from "./Functions/FollowButton";
 import Link from "next/link";
 import { LikeToggleBtn, PostTypes } from "./Functions/LikeToggleBtn";
-import { useComment } from "@/context/CommentsContext";
+import { PostComments, useComment } from "@/context/CommentsContext";
+import { Post } from "./PostsContainer";
 
 
 interface PostCardProps {
@@ -64,7 +65,7 @@ interface UserDetailsTypes {
     following: string[];
 }
 export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Postuuid } : PostCardProps) {
-    const Result = getRelativeTime(createdAt);
+    const Result = getRelativeTime({ createdAt });
     const Current_User = useSession();
     const [userDetails, setUserDetails] = useState<UserDetailsTypes | null>(null);
     useEffect(() => {
@@ -138,6 +139,21 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
         }
     };
     const { setIsOpenComments, setPostUuid } = useComment();
+    const [commentsLength, setCommentsLength] = useState(0)
+    const [allPosts, setAllPosts] = useState<PostComments[] | []>([]);
+    const PostSelected = allPosts.find((post: Post) => post?.uuid === Postuuid);
+    useEffect(() => {
+        const unsubscribe = onSnapshot(doc(db, 'global', "posts"), (snapshot) => {
+            const posts = snapshot?.data()?.posts || [];
+            setAllPosts(posts);
+        })
+        return () => unsubscribe();
+    },[])
+    useEffect(() => {
+  if (PostSelected) {
+    setCommentsLength(PostSelected.comments?.length || 0);
+  }
+}, [allPosts, Postuuid]);
     return (
         <main
             className="w-full flex items-start
@@ -260,16 +276,19 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                             fill={isLiked ? "red" : "none"}
                             color={isLiked ? "red" : "currentColor"}
                             onClick={handleLike}
-                        /> {likesCount}
+                        /> {likesCount !== 0 && likesCount}
                     </span>
-                    <MessageCircle 
-                        className="cursor-pointer"
-                        onClick={() => {
-                            setIsOpenComments(true);
-                            setPostUuid(Postuuid);
-                        }}
-                        size={20}
-                    />
+                    <span
+                        className="flex gap-1 cursor-pointer hover:scale-105 transition-all duration-200"
+                    >
+                        <MessageCircle 
+                            size={20}
+                            onClick={() => {
+                                setIsOpenComments(true);
+                                setPostUuid(Postuuid);
+                            }}
+                        /> {commentsLength !== 0 && commentsLength}
+                    </span>
                     <Repeat2
                         size={20}
                     />

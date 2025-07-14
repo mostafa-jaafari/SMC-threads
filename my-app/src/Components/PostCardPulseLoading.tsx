@@ -3,7 +3,7 @@ export default function PostCardPulseLoading() {
         <main className="w-full flex items-start gap-4 p-6 border-b border-neutral-800">
             <div className="relative">
                 <div className="w-10 h-10 rounded-full border bg-neutral-800 animate-pulse"></div>
-                <span className="absolute bottom-0 right-0 bg-neutral-700 rounded-full w-4 h-4 animate-pulse"></span>
+                <span className="absolute bottom-0 right-0 bg-neutral-700 rounded-full w-4 h-4"></span>
             </div>
             
             <section className="w-full">

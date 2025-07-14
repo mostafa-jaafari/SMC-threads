@@ -1,19 +1,55 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { Post } from "@/Components/PostsContainer";
+import { db } from "@/Firebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import { createContext, useContext, useEffect, useState } from "react";
 
 
+export interface PostComments extends Post {
+    comments: {
+        uuid: string;
+        text: string,
+        createdAt: string,
+        author: {
+            Name: string;
+            Email: string;
+            ProfileImage: string;
+        }
+
+    }[]
+}
 interface CommentsContainerProps {
     setIsOpenComments: (iSOpen: boolean) => void;
     isOpenComments: boolean;
     setPostUuid: (postuuid: string) => void;
     postUuid: string;
+    // setCommentsLength: (Length: number) => void;
+    commentsLength: number;
+    // setAllPosts: (Posts: PostComments[]) => void;
+    PostSelected: PostComments | undefined;
 }
 const CommentContext = createContext<CommentsContainerProps | null>(null);
 export function CommentContextProvider({ children } : {children: React.ReactNode;}){
     const [isOpenComments, setIsOpenComments] = useState<boolean>(false);
     const [postUuid, setPostUuid] = useState('');
+    const [commentsLength, setCommentsLength] = useState(0)
+    const [allPosts, setAllPosts] = useState<PostComments[] | []>([]);
+    const PostSelected = allPosts.find((post: Post) => post?.uuid === postUuid);
+    useEffect(() => {
+        const unsubscribe = onSnapshot(doc(db, 'global', "posts"), (snapshot) => {
+            const posts = snapshot?.data()?.posts || [];
+            setAllPosts(posts);
+        })
+        return () => unsubscribe();
+    },[])
+    useEffect(() => {
+        const selected = allPosts.find((post) => post?.uuid === postUuid);
+        if (selected) {
+            setCommentsLength(selected.comments?.length || 0);
+        }
+    }, [allPosts, postUuid]);
     return (
-        <CommentContext.Provider value={{ isOpenComments, setIsOpenComments, setPostUuid, postUuid }}>
+        <CommentContext.Provider value={{ isOpenComments, setIsOpenComments, setPostUuid, postUuid, PostSelected, commentsLength }}>
             {children}
         </CommentContext.Provider>
     )

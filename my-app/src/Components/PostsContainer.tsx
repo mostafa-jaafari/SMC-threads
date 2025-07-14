@@ -9,7 +9,9 @@ import { db } from "@/Firebase";
 import { useUserInfo } from "@/context/UserInfoContext";
 import PostCardPulseLoading from "./PostCardPulseLoading";
 
-interface Post {
+
+
+export interface Post {
     postowner: string;
     whatsnew: string;
     createdAt: Timestamp;
