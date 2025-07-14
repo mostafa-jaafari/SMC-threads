@@ -3,7 +3,7 @@ import PostsContainer from "@/Components/PostsContainer";
 
 export default async function Home() {
   return (
-    <main className="w-full">
+    <main className="w-full pb-14">
         <HeaderMobile />
         <section 
           className="w-full min-h-screen flex flex-col justify-center 

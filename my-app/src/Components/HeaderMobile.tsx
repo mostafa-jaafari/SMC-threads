@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default function HeaderMobile() {
     return (
-        <section className="w-full flex justify-end">
+        <section className="bg-[#0A0A0A]/90 backdrop-blur-[10px] sticky top-0 z-50 w-full flex justify-end">
           <div className="lg:hidden md:hidden block w-1/2 flex justify-between items-center py-2 pr-10">
             <Link href="/">
               <div 

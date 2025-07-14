@@ -42,7 +42,7 @@ export default function SideBar() {
     const { isCreatePostOpen, setIsCreatePostOpen } = useCreatePost();
     return (
         <section 
-            className="z-40 flex-shrink-0 lg:sticky fixed 
+            className="bg-black z-40 flex-shrink-0 lg:sticky fixed 
                 md:sticky lg:left-0 lg:top-0 md:left-0 
                 md:top-0 bottom-0 left-0 flex md:flex-col 
                 lg:flex-col items-center md:justify-start 

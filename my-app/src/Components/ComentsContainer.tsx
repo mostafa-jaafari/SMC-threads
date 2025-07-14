@@ -136,7 +136,7 @@ export function CommentsContainer() {
                 className={`
                     relative bg-neutral-900 rounded-3xl border border-neutral-800
                     overflow-x-hidden transition-all duration-500 ease-in-out
-                    transform h-full
+                    transform max-h-full
                     ${isOpenComments
                         ? "max-w-3xl max-h-[1000px] scale-100 opacity-100 p-0"
                         : "max-w-0 max-h-0 scale-95 opacity-0 p-4"

@@ -76,15 +76,15 @@ export default function SideBarMenu({ CLASSNAME, BUTTONCLASSNAME, MENUCLASSNAME 
         <main className={CLASSNAME}>
             <span 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`${BUTTONCLASSNAME} text-neutral-600 cursor-pointer 
+                className={`${BUTTONCLASSNAME} z-50 text-neutral-600 cursor-pointer 
                     hover:text-white transition-all duration-300`}>
                 <AlignRight size={24} />
             </span>
             {isMenuOpen && (
                 <section 
                     ref={MenuRef}
-                    className={`bg-black border border-neutral-900 
-                        rounded-lg p-4 min-w-60 space-y-1
+                    className={`bg-black z-50 border border-neutral-900 
+                        rounded-lg p-4 w-60 space-y-1
                         ${MENUCLASSNAME}`}>
                     {SideBar_Menu_Links.map((item, index) => {
                             if(item.label.toLowerCase() === "feeds" || item.label.toLowerCase() === "report a problem") {
