@@ -5,6 +5,32 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth as ClientAuth } from "@/Firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
+// Extend NextAuth types
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      image: string;
+    };
+  }
+
+  interface JWT {
+    id: string;
+    picture: string;
+  }
+}
+
+// Extend the Profile type to include picture property
+interface ExtendedProfile {
+  sub?: string;
+  email?: string;
+  name?: string;
+  picture?: string;
+  image?: string;
+}
+
 export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
@@ -44,41 +70,42 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user, profile }) {
-    try {
-      if (profile?.email) {
-        const userRef = doc(db, "users", profile.email);
-        const userSnap = await getDoc(userRef);
-        if (!userSnap.exists()) {
-          await setDoc(userRef, {
-            id: profile.sub || user.id,
-            email: profile.email,
-            name: profile.name || user.name,
-            profileimage: user.image,
-          });
+      try {
+        if (profile?.email) {
+          const userRef = doc(db, "users", profile.email);
+          const userSnap = await getDoc(userRef);
+          if (!userSnap.exists()) {
+            await setDoc(userRef, {
+              id: profile.sub || user.id,
+              email: profile.email,
+              name: profile.name || user.name,
+              profileimage: user.image,
+            });
+          }
         }
+        return true;
+      } catch (error) {
+        console.error("🔥 Firestore error in signIn callback:", error);
+        return false;
       }
-      return true;
-    } catch (error) {
-      console.error("🔥 Firestore error in signIn callback:", error);
-      return false; // يمنع تسجيل الدخول لو فشل تسجيل المستخدم
-    }
-  },
+    },
     async jwt({ token, account, profile, user }) {
       if (account && profile) {
-        token.id = profile.sub;
-        token.email = profile.email;
-        token.name = profile.name;
-        token.picture = profile?.picture || profile?.image || user?.image || "";
+        const extendedProfile = profile as ExtendedProfile;
+        token.id = extendedProfile.sub;
+        token.email = extendedProfile.email;
+        token.name = extendedProfile.name;
+        token.picture = extendedProfile.picture || extendedProfile.image || user?.image || "";
       }
       return token;
     },
 
     async session({ session, token }) {
       session.user = {
-        id: token.id,
-        email: token.email,
-        name: token.name,
-        image: token.picture || session.user?.image,
+        id: token.id as string,
+        email: token.email as string,
+        name: token.name as string,
+        image: (token.picture as string) || session.user?.image || "",
       };
       return session;
     },
