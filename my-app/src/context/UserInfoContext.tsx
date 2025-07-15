@@ -10,6 +10,8 @@ interface UserInfoContextProps {
     email: string,
     name: string,
     profileimage: string,
+    profilebio?: string;
+    interests?: string[];
 }
 const UserInfoContext = createContext<UserInfoContextProps | undefined>(undefined)
 
@@ -20,6 +22,8 @@ export function UserInfoProvider({ children }: { children: React.ReactNode }){
         email: "",
         name: "",
         profileimage: "",
+        profilebio: "",
+        interests: [],
     });
     useEffect(() => {
         if(!session?.data?.user?.email) return;
@@ -30,6 +34,8 @@ export function UserInfoProvider({ children }: { children: React.ReactNode }){
                     email: data?.email,
                     name: data?.name,
                     profileimage: data?.profileimage,
+                    profilebio: data?.profilebio,
+                    interests: data?.interests,
                 });
             }
         })

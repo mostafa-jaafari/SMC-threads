@@ -1,5 +1,6 @@
 import HeaderMobile from "@/Components/HeaderMobile";
 import ProfileHeader from "./ProfileHeader ";
+import { EditProfile } from "@/Components/EditProfile";
 
 
 
@@ -27,6 +28,7 @@ export default function page(){
                     <ProfileHeader />
                 </div>
             </section>
+            <EditProfile />
         </main>
     )
 }
