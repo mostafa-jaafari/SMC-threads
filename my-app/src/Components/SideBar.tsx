@@ -26,7 +26,7 @@ const SideBar_Icons = [
     },
     {
         icon: User,
-        link: "/@mostafa-jaafari"
+        link: "/profile"
     }
 ]
 
