@@ -17,7 +17,7 @@ export default function page(){
             />
             <div className="text-center">
                 <BlurText
-                text="Welcome back to Saylo"
+                text="Welcome back to My Threads"
                 delay={150}
                 animateBy="words"
                 direction="top"

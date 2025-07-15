@@ -27,7 +27,7 @@ export default function Login_Form() {
         // },
     ];
     return (
-        <main className="w-1/3">
+        <main className="w-full max-w-[500px] px-10">
             {Fixed_Login_Logos.map((logo, index) => {
                 return (
                     <img 
