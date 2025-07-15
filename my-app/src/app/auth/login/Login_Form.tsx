@@ -53,6 +53,7 @@ export default function Login_Form() {
                     Login with Google
                 </button>
                 <button 
+                    onClick={() => signIn('github')}
                     className="flex items-center justify-center gap-4 border 
                         border-neutral-800 rounded-lg px-4 py-3 w-full
                         hover:bg-black cursor-pointer
@@ -62,7 +63,7 @@ export default function Login_Form() {
                         alt="Facebook Logo"
                         className="w-6 h-6"
                     />
-                    Login with Facebook
+                    Login with X
                 </button>
             </section>
         </main>

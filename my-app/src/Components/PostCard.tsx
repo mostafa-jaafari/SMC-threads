@@ -160,6 +160,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                 gap-4 p-6 border-b border-neutral-800"
         >
             <div className="relative">
+                {Current_User?.data?.user?.name || "null"}
                 <div 
                     className="relative overflow-hidden w-10 h-10 rounded-full border">
                         <Image 

@@ -1,5 +1,6 @@
 import { type AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth as ClientAuth } from "@/Firebase";
@@ -31,11 +32,32 @@ interface ExtendedProfile {
   image?: string;
 }
 
+interface GitHubProfile {
+  id: number;
+  name: string | null;
+  login: string;
+  email: string | null;
+  avatar_url: string;
+}
+
 export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.NEXTAUTH_GOOGLE_CLIENT_ID!,
       clientSecret: process.env.NEXTAUTH_GOOGLE_CLIENT_SECRET!,
+    }),
+    GithubProvider({
+      clientId: process.env.NEXTAUTH_GITHUB_CLIENT_ID!,
+      clientSecret: process.env.NEXTAUTH_GITHUB_CLIENT_SECRET!,
+      profile(profile: GitHubProfile) {
+        const fallbackEmail = profile.email || `${profile.login}@github.com`; // fallback dummy email if null
+        return {
+          id: profile.id.toString(),
+          name: profile.name || profile.login,
+          email: fallbackEmail,
+          image: profile.avatar_url,
+        };
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -74,31 +96,58 @@ export const authOptions: AuthOptions = {
         if (profile?.email) {
           const userRef = doc(db, "users", profile.email);
           const userSnap = await getDoc(userRef);
+
+          const fallbackName =
+            profile.name ||
+            (profile as GitHubProfile).login ||
+            profile.email?.split("@")[0]?.replace(/\./g, " ").replace(/\b\w/g, c => c.toUpperCase()) ||
+            "User";
+
           if (!userSnap.exists()) {
             await setDoc(userRef, {
               id: profile.sub || user.id,
               email: profile.email,
-              name: profile.name || user.name,
+              name: fallbackName,
               profileimage: user.image,
             });
           }
         }
+
         return true;
       } catch (error) {
         console.error("🔥 Firestore error in signIn callback:", error);
         return false;
       }
     },
+
     async jwt({ token, account, profile, user }) {
       if (account && profile) {
         const extendedProfile = profile as ExtendedProfile;
-        token.id = extendedProfile.sub;
-        token.email = extendedProfile.email;
-        token.name = extendedProfile.name;
-        token.picture = extendedProfile.picture || extendedProfile.image || user?.image || "";
+
+        token.id = extendedProfile.sub || user?.id || "";
+        token.email = extendedProfile.email || user?.email || "";
+        token.name =
+          extendedProfile.name ||
+          (profile as GitHubProfile).login ||
+          extendedProfile.email?.split("@")[0] ||
+          "User";
+        token.picture =
+          extendedProfile.picture ||
+          extendedProfile.image ||
+          user?.image ||
+          "";
       }
+
+      if (account?.type === "credentials" && user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image || "";
+      }
+
       return token;
     },
+
 
     async session({ session, token }) {
       session.user = {
