@@ -1,4 +1,5 @@
 "use client";
+import { useEditProfile } from '@/context/OpenEditProfileContext';
 import { useUserInfo } from '@/context/UserInfoContext';
 import { ChartColumnBig, Instagram, Plus } from 'lucide-react'
 import Image from 'next/image'
@@ -8,6 +9,13 @@ import React from 'react'
 
 export default function ProfileHeader () {
     const { name, profileimage, profilebio, interests } = useUserInfo();
+    const { setIsOpenEditProfile, setTabName } = useEditProfile();
+
+
+    const HandleAddInterests = async () => {
+        await setIsOpenEditProfile(true);
+        setTabName('interests')
+    }
   return (
     <section>
         <div
@@ -68,6 +76,7 @@ export default function ProfileHeader () {
                     )
                 })}
                 <button
+                    onClick={HandleAddInterests}
                     className='py-2 px-4 rounded-full 
                         hover:bg-neutral-900/50 cursor-pointer
                         border border-neutral-800'
@@ -126,6 +135,7 @@ export default function ProfileHeader () {
             className='pt-2'
         >
             <button
+                onClick={() => setIsOpenEditProfile(true)}
                 className='cursor-pointer border border-neutral-800 
                     w-full flex justify-center text-sm font-semibold 
                     py-1.5 rounded-lg'
