@@ -109,6 +109,7 @@ export const authOptions: AuthOptions = {
               email: profile.email,
               name: fallbackName,
               profileimage: user.image,
+              isPrivateProfile: false,
             });
           }
         }
