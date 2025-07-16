@@ -14,7 +14,7 @@ export default function page(){
             >
                 <HeaderMobile />
                 <div
-                    className="py-4"
+                    className="py-4 hidden lg:block md:block"
                 >
                     Profile
                 </div>
