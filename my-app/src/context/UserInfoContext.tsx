@@ -13,6 +13,10 @@ interface UserInfoContextProps {
     profilebio?: string;
     interests?: string[];
     isPrivateProfile?: boolean;
+    Links: {
+            label: string,
+            link: string,
+        }[];
 }
 const UserInfoContext = createContext<UserInfoContextProps | undefined>(undefined)
 
@@ -26,6 +30,7 @@ export function UserInfoProvider({ children }: { children: React.ReactNode }){
         profilebio: "",
         interests: [],
         isPrivateProfile: false,
+        Links: [],
     });
     useEffect(() => {
         if(!session?.data?.user?.email) return;
@@ -39,6 +44,7 @@ export function UserInfoProvider({ children }: { children: React.ReactNode }){
                     profilebio: data?.profilebio,
                     interests: data?.interests,
                     isPrivateProfile: data?.isPrivateProfile,
+                    Links: data?.Links,
                 });
             }
         })

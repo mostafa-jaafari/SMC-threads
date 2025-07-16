@@ -1,9 +1,9 @@
 "use client";
 
 import { useUserInfo } from "@/context/UserInfoContext";
-import { AlignJustify, ChevronLeft, ChevronRight, CircleMinus, DiamondPlus } from "lucide-react";
+import { AlignJustify, ChevronLeft, ChevronRight, CircleMinus, DiamondPlus, Link2, Pen } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { ToggleButton } from "./ToggleButton";
 import { toast } from "sonner";
 import { useEditProfile } from "@/context/OpenEditProfileContext";
@@ -16,13 +16,18 @@ interface inputsEditTypes{
     Name: string;
     Bio: string;
     Interests: string[];
+    Links: {
+            label: string,
+            link: string,
+        }[];
     isPrivateAccount: boolean;
 }
 interface FirestoreUserData {
   name: string;
-  bio: string;
+  profilebio: string;
   interests: string[];
-  isPrivateAccount: boolean;
+  isPrivateProfile: boolean;
+  profileimage: string;
 }
 export function EditProfile(){
     const session = useSession();
@@ -30,39 +35,56 @@ export function EditProfile(){
     const { isOpenEditProfile, setIsOpenEditProfile, setTabName, tabName } = useEditProfile();
     const EditProfileHeaderRef = useRef<HTMLDivElement | null>(null);
     const EditProfileRef = useRef<HTMLDivElement | null>(null);
-    const { name, profileimage, profilebio, interests, isPrivateProfile } = useUserInfo();
+    const { name, profileimage, profilebio, interests, isPrivateProfile, Links } = useUserInfo();
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+    const HandleChangeUpdateProfile = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if(!file) return;
+        setSelectedFile(file);
+        const filePreviewURL = URL.createObjectURL(file);
+        setProfileImagePreview(filePreviewURL as string);
+    }
+
     useEffect(() => {
         const HideEditProfile = (e: MouseEvent) => {
             const isOutsideContent = EditProfileHeaderRef.current && !EditProfileHeaderRef.current.contains(e.target as Node);
             const isOutsideHeader = EditProfileRef.current && !EditProfileRef.current.contains(e.target as Node);
             if(isOutsideContent && isOutsideHeader){
                 setIsOpenEditProfile(false);
+                if(profileImagePreview) {
+                    URL.revokeObjectURL(profileImagePreview);
+                    setProfileImagePreview(null);
+                }
             }
         }
         document.addEventListener("mousedown", HideEditProfile);
-        return () => removeEventListener("mousedown", HideEditProfile);
-    },[isPrivateProfile, interests, name, profilebio, setIsOpenEditProfile])
+        return () => document.removeEventListener("mousedown", HideEditProfile);
+    },[isPrivateProfile, interests, name, profilebio, setIsOpenEditProfile, profileImagePreview])
     
-    useEffect(() => {
-        if (isOpenEditProfile) {
-            setInputsEdit({
-            Name: name,
-            Bio: profilebio || "",
-            Interests: interests || [],
-            isPrivateAccount: isPrivateProfile || false,
-            });
-            setInterestsInput("");
-            setTabName("");
-        }
-    }, [isOpenEditProfile, name, profilebio, interests, setTabName, isPrivateProfile]);
-
     
     const [inputsEdit, setInputsEdit] = useState<inputsEditTypes>({
         Name: "",
         Bio: "",
         Interests: [],
         isPrivateAccount: false,
+        Links: [],
     });
+    useEffect(() => {
+        if (isOpenEditProfile) {
+            setInputsEdit({
+                Name: name,
+                Bio: profilebio || "",
+                Interests: interests || [],
+                isPrivateAccount: isPrivateProfile || false,
+                Links: Links || [],
+            });
+            setInterestsInput("");
+            setTabName("");
+        }
+    }, [isOpenEditProfile, name, profilebio, interests, setTabName, isPrivateProfile, Links, profileimage]);
+
+    
 
     useEffect(() => {
     if (name || profileimage || profilebio || interests) {
@@ -71,13 +93,10 @@ export function EditProfile(){
             Bio: profilebio || "",
             Interests: interests || [],
             isPrivateAccount: isPrivateProfile || false,
+            Links: Links || [],
         }));
     }
-    }, [name, profileimage, profilebio, interests, isPrivateProfile]);
-
-    const HandleChangePrivateProfile = () => {
-        toast.success("Profile privacy setting changed!")
-    }
+    }, [name, profileimage, profilebio, interests, isPrivateProfile, Links]);
 
     const [animateTab, setAnimateTab] = useState(false);
     const [showTab, setShowTab] = useState(false);
@@ -110,6 +129,10 @@ export function EditProfile(){
         const FiltredInterests = inputsEdit.Interests.filter((_, idx) => idx !== InterestIndex);
         setInputsEdit({...inputsEdit, Interests: FiltredInterests})
     }
+    const HandleRemoveLink = (LinkIndex: number) => {
+        const FiltredLinks = inputsEdit.Links.filter((_, idx) => idx !== LinkIndex);
+        setInputsEdit({...inputsEdit, Links: FiltredLinks})
+    }
     
     const [isSaveInterestsLoading, setIsSaveInterestsLoading] = useState<boolean>(false);
     function arraysEqual(a: string[], b: string[]) {
@@ -138,36 +161,226 @@ export function EditProfile(){
         }
     }
 
-    const HandleUpdateProfile = async () => {
-        if (!CurrentUser_Email) return;
-
-        const DocRef = doc(db, "users", CurrentUser_Email);
-
-        const updates: Partial<FirestoreUserData> = {};
-        if (inputsEdit.Name !== name) updates.name = inputsEdit.Name;
-        if (inputsEdit.Bio !== profilebio) updates.bio = inputsEdit.Bio;
-        if (inputsEdit.isPrivateAccount !== isPrivateProfile)
-            updates.isPrivateAccount = inputsEdit.isPrivateAccount;
-
-        if (Object.keys(updates).length === 0) {
-            toast.info("No changes to update.");
-            return;
+    const [isSaveLinksLoading, setIsSaveLinksLoading] = useState(false);
+    const HandleSaveLinks = async () => {
+        if(!CurrentUser_Email) return;
+        try{
+            setIsSaveLinksLoading(true);
+            const DocRef = doc(db, "users", CurrentUser_Email);
+            const HasChanged = JSON.stringify(inputsEdit.Links) !== JSON.stringify(Links);
+            if (!HasChanged) {
+                toast.info("Nothing to update your Links are unchanged.");
+                setIsSaveLinksLoading(false);
+                return;
+            }
+            await updateDoc(DocRef, {
+                Links: inputsEdit.Links,
+            })
+            setIsSaveLinksLoading(false);
+            toast.success("Links updated successfully!")
+        }catch(err){
+            console.log(err);
         }
+    }
+    const [linksInput, setLinksInput] = useState({
+        label: "",
+        link: "",
+    });
+    const HandlePushLinks = () => {
+        const label = linksInput.label.trim();
+        const link = linksInput.link.trim();
 
-        try {
-            await updateDoc(DocRef, updates);
-            toast.success("Profile updated!");
-        } catch (err) {
-            console.error(err);
-            toast.error("Update failed!");
+        if (
+            label &&
+            link &&
+            !inputsEdit.Links.some((item) => item.link === link)
+        ) {
+            setInputsEdit({
+            ...inputsEdit,
+            Links: [
+                ...inputsEdit.Links,
+                { label, link }
+            ],
+            });
+
+            setLinksInput({ label: "", link: "" }); // إعادة تعيين المدخلات
         }
     };
+
+
+    const HandleUpdateProfile = async () => {
+    if (!CurrentUser_Email) return;
+
+    const DocRef = doc(db, "users", CurrentUser_Email);
+
+    const updates: Partial<FirestoreUserData> = {};
+
+    // Only update if name is not empty and has changed
+    if (inputsEdit.Name.trim() && inputsEdit.Name !== name) {
+        updates.name = inputsEdit.Name.trim();
+    }
+
+    // Only update if bio is not empty and has changed
+    if (inputsEdit.Bio.trim() && inputsEdit.Bio !== profilebio) {
+        updates.profilebio = inputsEdit.Bio.trim();
+    }
+    
+    // For boolean field (can be false), just check if it changed
+    if (
+        typeof inputsEdit.isPrivateAccount === "boolean" &&
+        inputsEdit.isPrivateAccount !== isPrivateProfile
+    ) {
+        updates.isPrivateProfile = inputsEdit.isPrivateAccount;
+    }
+
+    // if (inputsEdit.ProfileImage && inputsEdit.ProfileImage !== profileimage) {
+        //     updates.profileimage = inputsEdit.ProfileImage;
+        // }
+
+    if(selectedFile) {
+        const Form_Data = new FormData();
+        Form_Data.append("file", selectedFile as File);
+        Form_Data.append('upload_preset', 'ml_default');
+        const res = await fetch("https://api.cloudinary.com/v1_1/dzih5telw/image/upload", {
+            method: "POST",
+            body: Form_Data,
+        });
+        const data = await res.json();
+        const Imgae_Url = data.secure_url;
+        updates.profileimage = Imgae_Url;
+        setProfileImagePreview(null);
+        setSelectedFile(null);
+    }
+    
+    // If no actual changes
+    if (Object.keys(updates).length === 0) {
+        toast.info("No changes to update.");
+        return;
+    }
+    try {
+        await updateDoc(DocRef, updates);
+        toast.success("Profile updated!");
+        setIsOpenEditProfile(false);
+        // onSnapshot will automatically update the context - no manual state update needed
+    } catch (err) {
+        console.error(err);
+        toast.error("Update failed!");
+    }
+};
 
     if(!isOpenEditProfile) return null;
 
 
     let EditProfileTabs;
     switch (tabName) {
+        case "links":
+            EditProfileTabs = (
+                <div
+                    className=""
+                >
+                    {/* ---- Links Header ---- */}
+                    <div
+                        className="border-b border-neutral-800 pb-4 w-full 
+                            flex items-center justify-between"
+                    >
+                        <span
+                            onClick={() => setTabName('')}
+                            className="cursor-pointer hover:text-neutral-400"
+                        >
+                            <ChevronLeft />
+                        </span>
+                        <h2
+                            className="font-bold flex justify-center"
+                        >
+                            {tabName}
+                        </h2>
+                        <button
+                            disabled={isSaveInterestsLoading}
+                            onClick={HandleSaveLinks}
+                            className="text-neutral-300 font-bold
+                            cursor-pointer hover:text-neutral-100"
+                        >
+                            {isSaveLinksLoading ? (
+                                <div className="w-4 h-4 border-2 border-transparent border-t-current rounded-full animate-spin">
+                                </div>
+                            ) : "Done"}
+                        </button>
+                    </div>
+                    {/* ---- Links Body ---- */}
+                    <div
+                        className="space-y-4 pt-4"
+                    >
+                        <div
+                            className="border border-neutral-800 
+                                rounded-xl flex flex-col items-center"
+                        >
+                            <div
+                                className="w-full flex border-b border-neutral-800"
+                            >
+                                <input 
+                                    className="w-full px-2 py-2 
+                                        outline-none"
+                                    type="text"
+                                    placeholder="Add Label ex:'Google'"
+                                    value={linksInput.label}
+                                    onChange={(e) => setLinksInput({ ...linksInput, label: e.target.value })}
+                                />
+                                <button
+                                    onClick={HandlePushLinks}
+                                    className="disabled:text-neutral-700 cursor-pointer px-2 text-neutral-200 font-bold"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                            <input
+                                className="w-full px-2 py-2 
+                                    outline-none"
+                                placeholder="Add Link ex:'Google.com'"
+                                value={linksInput.link}
+                                onChange={(e) => setLinksInput({ ...linksInput, link: e.target.value })}
+                            />
+                        </div>
+                        <div
+                            className={`w-full rounded-xl border-neutral-800
+                                ${inputsEdit.Links.length > 0 && "border"}`}
+                        >
+                            {inputsEdit.Links.map((item, idx) => {
+                                return (
+                                    <div
+                                        key={idx}
+                                        className={`flex items-center justify-between 
+                                            text-neutral-500 py-2 px-2 border-neutral-800
+                                            ${idx !== inputsEdit.Links.length -1 ? "border-b" : ""}`}
+                                    >
+                                        <div
+                                            className="w-full flex items-center gap-2"
+                                        >
+                                            <Link2
+                                                size={14} 
+                                            />
+                                            <a
+                                                className=""
+                                                href={item.link}
+                                            >
+                                                {item.label}
+                                            </a>
+                                        </div>
+                                        <span
+                                            onClick={() => HandleRemoveLink(idx)}
+                                            className="cursor-pointer ml-2"
+                                        >
+                                            <CircleMinus 
+                                                size={14}
+                                            />
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )
+            break;
         case "interests":
             EditProfileTabs = (
                 <div
@@ -206,7 +419,8 @@ export function EditProfile(){
                         className="space-y-4 pt-4"
                     >
                         <div
-                            className="px-2 border border-neutral-800 rounded-xl flex items-center"
+                            className="px-2 border border-neutral-800 rounded-xl 
+                                flex items-center"
                         >
                             <input 
                                 className="w-full pr-2 py-2 
@@ -224,7 +438,8 @@ export function EditProfile(){
                             </button>
                         </div>
                         <div
-                            className="w-full rounded-xl border border-neutral-800"
+                            className={`w-full rounded-xl border-neutral-800
+                                ${inputsEdit.Interests.length > 0 && "border"}`}
                         >
                             {inputsEdit.Interests.map((item, idx) => {
                                 return (
@@ -293,12 +508,31 @@ export function EditProfile(){
                             className="relative flex-shrink-0 w-20 h-20 rounded-full overflow-hidden border"
                         >
                             <Image 
-                                src={profileimage}
+                                src={profileImagePreview ? profileImagePreview : profileimage}
                                 alt=""
                                 fill
                                 className="object-cover"
                                 defaultValue={name}
                             />
+                            <div>
+                                <label
+                                    className="absolute left-4 bottom-2 z-50
+                                        bg-black p-1 rounded-lg cursor-pointer 
+                                        hover:bg-black/60"
+                                    htmlFor="ChangeProfileImage"
+                                >
+                                    <Pen 
+                                        size={16}
+                                    />
+                                </label>
+                                <input 
+                                    type="file" 
+                                    className="hidden"
+                                    onChange={HandleChangeUpdateProfile}
+                                    name="" 
+                                    id="ChangeProfileImage"
+                                />
+                            </div>
                         </div>
                     </div>
                     <div
@@ -357,6 +591,7 @@ export function EditProfile(){
                     </div>
                     {/* ------- Links ------- */}
                     <div
+                        onClick={() => setTabName("links")}
                         className="w-full border-b border-neutral-800 pb-4
                             flex items-center cursor-pointer justify-between"
                     >
@@ -365,7 +600,12 @@ export function EditProfile(){
                         >
                             Links
                         </h1>
-                        <ChevronRight size={20}/>
+                        <span
+                            className="flex items-center"
+                        >
+                            <p>{Links?.length}</p>
+                            <ChevronRight size={20}/>
+                        </span>
                     </div>
                     <div
                         className="flex gap-4 items-center justify-between"
@@ -384,7 +624,6 @@ export function EditProfile(){
                         </span>
                         <ToggleButton 
                             isActive={inputsEdit.isPrivateAccount}
-                            onclick={HandleChangePrivateProfile}
                             setIsActive={(newVal) =>
                                 setInputsEdit({ ...inputsEdit, isPrivateAccount: newVal })
                             }

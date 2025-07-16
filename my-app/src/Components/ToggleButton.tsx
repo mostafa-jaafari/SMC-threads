@@ -4,14 +4,12 @@
 interface ToggleButtonProps {
     setIsActive: (active: boolean) => void;
     isActive: boolean;
-    onclick: (a: boolean) => void;
 }
-export function ToggleButton({ setIsActive, isActive, onclick }: ToggleButtonProps){
+export function ToggleButton({ setIsActive, isActive }: ToggleButtonProps){
     
     const handleClick = () => {
         const newState = !isActive;
         setIsActive(newState);
-        onclick(newState);
     };
     return (
         <div
