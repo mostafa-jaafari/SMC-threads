@@ -100,14 +100,16 @@ export function EditProfile(){
 
     const [animateTab, setAnimateTab] = useState(false);
     const [showTab, setShowTab] = useState(false);
+
     useEffect(() => {
-        if (tabName === "interests") {
+        if (tabName) {
             setShowTab(true);
-            setTimeout(() => setAnimateTab(true), 10);
+            const inTimeout = setTimeout(() => setAnimateTab(true), 10);
+            return () => clearTimeout(inTimeout); // تنظيف في حالة تغيير سريع
         } else if (showTab) {
             setAnimateTab(false);
-            const timeout = setTimeout(() => setShowTab(false), 300);
-            return () => clearTimeout(timeout);
+            const outTimeout = setTimeout(() => setShowTab(false), 300); // نفس مدة transition
+            return () => clearTimeout(outTimeout);
         }
     }, [tabName, showTab]);
 
@@ -276,7 +278,9 @@ export function EditProfile(){
         case "links":
             EditProfileTabs = (
                 <div
-                    className=""
+                    className={`transform transition-all duration-300 ease-in-out
+                        ${animateTab ? "w-full opacity-100 translate-y-0" : "w-0 opacity-0 translate-y-10"}
+                    `}
                 >
                     {/* ---- Links Header ---- */}
                     <div
