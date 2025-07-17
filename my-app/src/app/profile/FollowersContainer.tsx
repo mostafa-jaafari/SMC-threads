@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import FollowersContainerHeader from './FollowersContainerHeader'
 import { useEditProfile } from '@/context/OpenEditProfileContext';
 import { useUserInfo } from '@/context/UserInfoContext';
@@ -25,13 +25,22 @@ export interface userDataTypes {
   interests: string[];
 }
 export default function FollowersContainer() {
-  const { currentFTab } = useEditProfile();
+  const { currentFTab, setShowfollowersMenu, showfollowersMenu, setTreeFollowers } = useEditProfile();
   const { Following, Followers, email } = useUserInfo();
-
+  const FollowersContainerRef = useRef<HTMLDivElement | null>(null);
   const CurrentTabSelected = currentFTab === "following" ? Following : Followers;
   const [usersData, setUsersData] = useState<userDataTypes[] | []>([]);
   const [isUsersDataLoading, setIsUsersDataLoading] = useState<boolean>(true)
   // const [isFollowing, setIsFollowing] = useState(true);
+  useEffect(() => {
+    const HideFollowersContainer = (e: MouseEvent) => {
+      if(FollowersContainerRef.current && !FollowersContainerRef.current.contains(e.target as Node)){
+        setShowfollowersMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", HideFollowersContainer);
+    return () =>  document.removeEventListener("mousedown", HideFollowersContainer);
+  },[])
   useEffect(() => {
     const usersRef = collection(db, "users");
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
@@ -43,18 +52,20 @@ export default function FollowersContainer() {
       }));
       setUsersData(followedUsers as userDataTypes[])
       setIsUsersDataLoading(false);
-      // setIsFollowing(Following.includes(PostOwner));
+      const TreeUsers = usersData.slice(0, 3);
+      setTreeFollowers(TreeUsers);
     })
     return () => unsubscribe();
-  },[currentFTab, CurrentTabSelected, Following])
+  },[currentFTab, CurrentTabSelected, Following, setTreeFollowers, usersData])
   if(isUsersDataLoading) return <div>Loading...</div>
-  return (
+  if(showfollowersMenu) return (
     <section
           className="fixed left-0 top-0 bg-black/50 
             z-50 w-full h-screen flex flex-col 
             items-center justify-start pt-14"
         >
             <div
+              ref={FollowersContainerRef}
                 className="lg:w-1/2 rounded-3xl bg-[#101010]
                   border border-neutral-800 overflow-hidden"
             >
@@ -62,7 +73,7 @@ export default function FollowersContainer() {
                 FollowersLength={Followers?.length}
                 FollowingLength={Following?.length}
               />
-                {usersData.length > 0 && usersData.map((user) => {
+                {usersData.length > 0 && usersData.map((user, idx) => {
                   const followedByBoth = Following.includes(user?.email) && Followers.includes(user?.email);
                   return (
                     <div
@@ -81,14 +92,15 @@ export default function FollowersContainer() {
                         />
                       </div>
                       <div
-                        className='w-full py-4 pr-6 flex items-center justify-between
-                          border-b border-neutral-800'
+                        className={`w-full py-4 pr-6 flex items-center justify-between
+                          border-neutral-800
+                          ${idx !== CurrentTabSelected.length - 1 && "border-b"}`}
                       >
                         <span>
                           <h1
                             className=''
                           >
-                            {user?.name} {followedByBoth ? "true" : "false"}
+                            {user?.name}
                           </h1>
                           <p
                             className='text-neutral-500'

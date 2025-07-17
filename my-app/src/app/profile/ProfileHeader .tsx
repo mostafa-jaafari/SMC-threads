@@ -18,7 +18,7 @@ const Profile_Tabs = [
 ];
 export default function ProfileHeader () {
     const { name, profileimage, profilebio, interests, isLoadingUserData } = useUserInfo();
-    const { setIsOpenEditProfile, setTabName } = useEditProfile();
+    const { setIsOpenEditProfile, setTabName, setShowfollowersMenu, treeFollowers } = useEditProfile();
     const { setIsCreatePostOpen } = useCreatePost();
 
     const router = useRouter();
@@ -174,17 +174,25 @@ export default function ProfileHeader () {
                     <div
                         className='flex items-center -space-x-1'
                     >
-                        {Array(3).fill(0).map((_, idx) => {
+                        {treeFollowers?.map((user, idx) => {
                             return (
                                 <div
                                     key={idx}
                                     className='relative w-4 h-4 overflow-hidden 
                                         rounded-full border border-neutral-800'
-                                ></div>
+                                >
+                                    <Image 
+                                        src={user?.profileimage}
+                                        alt=''
+                                        fill
+                                        object-cover
+                                    />
+                                </div>
                             )
                         })}
                     </div>
                     <h1
+                        onClick={() => setShowfollowersMenu(true)}
                         className='text-neutral-500 text-sm hover:underline cursor-pointer'
                     >
                         Followers

@@ -9,7 +9,7 @@ interface FollowersContainerHeaderTypes{
 }
 const HeaderTabs = ["followers", "following"];
 export default function FollowersContainerHeader({ FollowersLength, FollowingLength }: FollowersContainerHeaderTypes) {
-    const { setCurrentFTab, currentFTab } = useEditProfile();
+    const { setCurrentFTab, currentFTab} = useEditProfile();
     
     return (
         <div
