@@ -24,9 +24,7 @@ export default function page(){
                         border-neutral-800 md:w-[600px] 
                         lg:w-[600px] overflow-hidden rounded-3xl"
                 >
-                    <div
-                        className="p-6"
-                    >
+                    <div>
                         <ProfileHeader />
                     </div>
                 </section>

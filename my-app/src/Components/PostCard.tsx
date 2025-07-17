@@ -155,7 +155,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
   }
 }, [allPosts, Postuuid, PostSelected]);
     return (
-        <main
+        <section
             className="w-full flex items-start
                 gap-4 p-6 border-b border-neutral-800"
         >
@@ -355,6 +355,6 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                     </div>
                 )}
             </div>
-        </main>
+        </section>
     )
 }
