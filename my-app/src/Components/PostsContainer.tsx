@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "@/Firebase";
 import { useUserInfo } from "@/context/UserInfoContext";
-import PostCardPulseLoading from "./PostCardPulseLoading";
+import PostSkeleton from "./PostSkeleton";
 
 
 
@@ -23,9 +23,9 @@ export interface Post {
 export default function PostsContainer() {
     const { setIsCreatePostOpen } = useCreatePost();
     const params = useParams();
-    const { name, profileimage } = useUserInfo()
+    const { name, profileimage, Following } = useUserInfo()
     const Page_Id = params.pageid;
-    const [allPosts, setAllPosts] = useState<Post[]>([]);
+    const [Posts, setPosts] = useState<Post[]>([]);
     const [isLoadingPosts, setIsLoadingPosts] = useState(true);
     useEffect(() => {
         setIsLoadingPosts(true)
@@ -35,7 +35,17 @@ export default function PostsContainer() {
             const unsubscribe = onSnapshot(DocRef, (snapshot) => {
                 const data = snapshot.data();
                 const posts = data?.posts;
-                setAllPosts(posts)
+                setPosts(posts)
+                setIsLoadingPosts(false);
+            });
+            return () => unsubscribe();
+        }else if(Page_Id === "following"){
+            const DocRef = doc(db, 'global', "posts");
+            const unsubscribe = onSnapshot(DocRef, (snapshot) => {
+                const data = snapshot.data();
+                const posts = data?.posts;
+                const Following_Posts = posts.filter((post: Post) => Following.includes(post.postowner));
+                setPosts(Following_Posts)
                 setIsLoadingPosts(false);
             });
             return () => unsubscribe();
@@ -44,7 +54,8 @@ export default function PostsContainer() {
         console.log(err);
         setIsLoadingPosts(false);
     }
-    }, [Page_Id]);
+    }, [Page_Id, Following]);
+    
     return (
         <main className="w-full">
             <div 
@@ -86,10 +97,19 @@ export default function PostsContainer() {
             </div>
             <section>
                 {isLoadingPosts ? (
-                        <PostCardPulseLoading />
+                        <PostSkeleton />
                     )
                     :
-                    allPosts?.map((post, index) => {
+                    Page_Id === "following" && Posts.length === 0 ?
+                    (
+                        <div
+                            className="p-6 w-full flex justify-center text-neutral-500"
+                        >
+                            Please Follow people to see more content here...
+                        </div>
+                    )
+                    :
+                    Posts?.map((post, index) => {
                     return (
                         <PostCard
                             key={index}
