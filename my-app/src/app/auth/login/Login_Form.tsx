@@ -41,29 +41,29 @@ export default function Login_Form() {
             <section className="space-y-2">
                 <button 
                     onClick={() => signIn('google')}
-                    className="flex items-center justify-center gap-4 border 
+                    className="flex items-center justify-center gap-2 border 
                         border-neutral-800 rounded-lg px-4 py-3 w-full
                         hover:bg-black cursor-pointer
-                        bg-black/30 text-md">
+                        bg-black/30 text-md font-bold">
+                    Login with
                     <img 
                         src="/GoogleIcon.png"
                         alt="Google Logo"
                         className="w-6 h-6"
                     />
-                    Login with Google
                 </button>
                 <button 
                     onClick={() => signIn('github')}
-                    className="flex items-center justify-center gap-4 border 
+                    className="flex items-center justify-center gap-2 border 
                         border-neutral-800 rounded-lg px-4 py-3 w-full
                         hover:bg-black cursor-pointer
-                        bg-black/30 text-md">
+                        bg-black/30 text-md font-bold">
+                    Login with
                     <img 
-                        src="/FacebookIcon.png"
+                        src="/GithubIcon.png"
                         alt="Facebook Logo"
                         className="w-6 h-6"
                     />
-                    Login with X
                 </button>
             </section>
         </main>
