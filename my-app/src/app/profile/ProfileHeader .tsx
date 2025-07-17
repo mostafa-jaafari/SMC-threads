@@ -17,7 +17,7 @@ const Profile_Tabs = [
     "Reports"
 ];
 export default function ProfileHeader () {
-    const { name, profileimage, profilebio, interests } = useUserInfo();
+    const { name, profileimage, profilebio, interests, isLoadingUserData } = useUserInfo();
     const { setIsOpenEditProfile, setTabName } = useEditProfile();
     const { setIsCreatePostOpen } = useCreatePost();
 
@@ -73,32 +73,56 @@ export default function ProfileHeader () {
                 className='w-full flex items-start justify-between'
             >
                 <span>
-                    <h1
+                    {isLoadingUserData ? (
+                        <div className="h-6 w-44 bg-neutral-800 rounded-md animate-pulse" />
+                    )
+                    :
+                    (
+                        <h1
                         className='text-2xl font-semibold'
-                    >
+                        >
                         {name}
                     </h1>
-                    <h2
-                    >
+                    )}
+                    {isLoadingUserData ? (
+                        <div className="h-6 w-34 mt-2 bg-neutral-800 rounded-md animate-pulse" />
+                    )
+                    :
+                    (
+                        <h2
+                        >
                         mostafa_jaafari
                     </h2>
+                    )}
                 </span>
-                <div
-                    className='relative w-20 h-20 overflow-hidden 
-                        rounded-full border'
-                >
-                    <Image 
-                        src={profileimage}
-                        alt=''
-                        fill
-                        className='object-cover'
-                    />
-                </div>
+                {isLoadingUserData ? (
+                        <div className="w-20 h-20 overflow-hidden 
+                            rounded-full bg-neutral-800 animate-pulse" />
+                    )
+                    :
+                    (
+                        <div
+                            className='relative w-20 h-20 overflow-hidden 
+                            rounded-full border'
+                            >
+                        <Image 
+                            src={profileimage}
+                            alt=''
+                            fill
+                            className='object-cover'
+                            />
+                    </div>
+                    )}
             </div>
             <div
                 className='py-4 max-w-[80%]'
             >
-                {profilebio !== "" && profilebio ? (
+                {isLoadingUserData ? (
+                        <div className="w-54 h-6 overflow-hidden 
+                            rounded-md bg-neutral-800 animate-pulse" />
+                    )
+                    :
+                     profilebio !== "" && profilebio ? (
                     <p>
                         {profilebio}
                     </p>
@@ -114,7 +138,12 @@ export default function ProfileHeader () {
                 <div
                     className='flex items-center gap-2 pt-2'
                 >
-                    {interests && interests.length > 0 && interests.map((item, idx) => {
+                    {isLoadingUserData ? (
+                        <div className="w-26 h-8 overflow-hidden 
+                            rounded-full bg-neutral-800 animate-pulse" />
+                    )
+                    :
+                    interests && interests.length > 0 && interests.map((item, idx) => {
                         return (
                             <button
                                 key={idx}

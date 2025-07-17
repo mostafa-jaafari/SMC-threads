@@ -68,18 +68,21 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
     const Result = getRelativeTime({ createdAt });
     const Current_User = useSession();
     const [userDetails, setUserDetails] = useState<UserDetailsTypes | null>(null);
+    const [isUserDetailsLoading, setIsUserDetailsLoading] = useState(true);
     useEffect(() => {
         const unsubscribe = onSnapshot(doc(db, 'users', PostOwner), (snapshot) => {
             if(snapshot.exists()){
                 setUserDetails(snapshot.data() as UserDetailsTypes);
+                setIsUserDetailsLoading(false);
             }else{
                 setUserDetails(null);
+                setIsUserDetailsLoading(false);
             }
         })
         return () => unsubscribe();
     },[PostOwner]);
 
-    const [isFollowing, setIsFollowing] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(true);
     useEffect(() => {
         const currentUserEmail = Current_User?.data?.user?.email;
         if (!currentUserEmail || currentUserEmail === PostOwner) return;
@@ -160,15 +163,24 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                 gap-4 p-6 border-b border-neutral-800"
         >
             <div className="relative">
-                <div 
-                    className="relative overflow-hidden w-10 h-10 rounded-full border">
+                {isUserDetailsLoading ? 
+                (
+                    <div 
+                        className="w-10 h-10 rounded-full bg-neutral-900 animate-pulse"
+                    />
+                )
+                :
+                (
+                    <div 
+                        className="relative overflow-hidden w-10 h-10 rounded-full border">
                         <Image 
                             src={userDetails?.profileimage as string}
                             alt="Profile Image"
                             fill
                             className="object-cover"
-                        />
+                            />
                     </div>
+                )}
                     <span
                         className="absolute bottom-0 right-0
                             bg-white text-black rounded-full cursor-pointer"
@@ -195,11 +207,17 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                     onMouseEnter={() => setIsNameHovered(true)}
                     onMouseLeave={() => setIsNameHovered(false)}
                     >
-                    <h1 
-                        className="capitalize font-semibold hover:underline cursor-pointer"
-                    >
-                        {userDetails?.name}
-                    </h1>
+                        {isUserDetailsLoading ? (
+                            <div className="w-44 h-6 bg-neutral-900 rounded-md animate-pulse"/>
+                        )
+                        :
+                        (
+                            <h1 
+                                className="capitalize font-semibold hover:underline cursor-pointer"
+                            >
+                                {userDetails?.name}
+                            </h1>
+                        )}
 
                     {iSNameHovered && (
                         <div

@@ -18,13 +18,14 @@ interface UserInfoContextProps {
             link: string,
         }[];
     Following: string[];
+    isLoadingUserData: boolean;
 }
 const UserInfoContext = createContext<UserInfoContextProps | undefined>(undefined)
 
 
 export function UserInfoProvider({ children }: { children: React.ReactNode }){
     const session = useSession();
-    const [userDetails, setUserDetails] = useState<UserInfoContextProps>({
+    const [userDetails, setUserDetails] = useState<Omit<UserInfoContextProps, "isLoadingUserData">>({
         email: "",
         name: "",
         profileimage: "",
@@ -34,8 +35,12 @@ export function UserInfoProvider({ children }: { children: React.ReactNode }){
         Links: [],
         Following: [],
     });
+    const [isLoadingUserData, setIsLoadingUserData] = useState<boolean>(true);
     useEffect(() => {
-        if(!session?.data?.user?.email) return;
+        if(!session?.data?.user?.email) {
+            setIsLoadingUserData(false);
+            return
+        };
         const unsubscribe = onSnapshot(doc(db, 'users', session?.data?.user?.email), (snapshot) => {
             if(snapshot.exists()){
                 const data = snapshot.data();
@@ -50,12 +55,13 @@ export function UserInfoProvider({ children }: { children: React.ReactNode }){
                     Following: data?.following,
                 });
             }
+            setIsLoadingUserData(false);
         })
         return () => unsubscribe();
     },[session])
 
     return (
-        <UserInfoContext.Provider value={ userDetails }>
+        <UserInfoContext.Provider value={{...userDetails, isLoadingUserData }}>
             {children}
         </UserInfoContext.Provider>
     )
