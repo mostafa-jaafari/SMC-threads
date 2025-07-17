@@ -40,7 +40,7 @@ export default function FollowersContainer() {
     }
     document.addEventListener("mousedown", HideFollowersContainer);
     return () =>  document.removeEventListener("mousedown", HideFollowersContainer);
-  },[])
+  },[setShowfollowersMenu])
   useEffect(() => {
     const usersRef = collection(db, "users");
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
