@@ -62,7 +62,7 @@ export default function PostsContainer() {
         <main className="w-full">
             <div 
                 className="hidden md:flex lg:flex w-full border-b border-neutral-800
-                    px-6 py-4 items-center justify-between">
+                px-6 py-4 items-center justify-between">
                 <div className="flex items-center gap-3">
                 <div 
                     className="relative w-10 h-10 rounded-full 
@@ -131,6 +131,8 @@ export default function PostsContainer() {
                             whatsnew={post?.whatsnew}
                             imagepost={post?.imagepost}
                             Postuuid={post?.uuid}
+                            CurrentPostIndex={index}
+                            PostsLength={Posts.length}
                         />
                     )
                 })}

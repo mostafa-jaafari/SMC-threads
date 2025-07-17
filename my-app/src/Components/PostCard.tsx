@@ -19,6 +19,8 @@ interface PostCardProps {
     whatsnew: string;
     imagepost: string;
     Postuuid: string;
+    CurrentPostIndex?: number;
+    PostsLength?: number;
 }
 const Options_Links = [
     {
@@ -64,7 +66,7 @@ export interface UserDetailsTypes {
     name: string;
     following: string[];
 }
-export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Postuuid } : PostCardProps) {
+export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Postuuid, CurrentPostIndex, PostsLength } : PostCardProps) {
     const Result = getRelativeTime({ createdAt });
     const Current_User = useSession();
     const [userDetails, setUserDetails] = useState<UserDetailsTypes | null>(null);
@@ -159,8 +161,9 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
 }, [allPosts, Postuuid, PostSelected]);
     return (
         <section
-            className="w-full flex items-start
-                gap-4 p-6 border-b border-neutral-800"
+            className={`w-full flex items-start
+                gap-4 p-6
+                ${PostsLength && CurrentPostIndex !== PostsLength - 1 ? "border-b border-neutral-800" : ""}`}
         >
             <div className="relative">
                 {isUserDetailsLoading ? 
