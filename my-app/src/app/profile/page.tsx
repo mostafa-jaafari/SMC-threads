@@ -2,6 +2,7 @@ import HeaderMobile from "@/Components/HeaderMobile";
 import ProfileHeader from "./ProfileHeader ";
 import { EditProfile } from "@/Components/EditProfile";
 import { OpenEditProfileProvider } from "@/context/OpenEditProfileContext";
+import FollowersContainer from "@/app/profile/FollowersContainer";
 
 
 
@@ -29,6 +30,7 @@ export default function page(){
                     </div>
                 </section>
                 <EditProfile />
+                <FollowersContainer />
             </main>
         </OpenEditProfileProvider>
     )

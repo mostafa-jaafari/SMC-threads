@@ -652,7 +652,8 @@ export function EditProfile(){
     return (
         <section
             className="absolute left-0 top-0 bg-black/50 
-                z-50 w-full h-screen flex flex-col items-center justify-start"
+                z-50 w-full h-screen flex flex-col 
+                items-center justify-start"
         >
             <div
                 ref={EditProfileHeaderRef}
