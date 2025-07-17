@@ -10,6 +10,7 @@ import Image from 'next/image';
 
 export interface userDataTypes {
   email: string;
+  id: string;
   followers: string[];
   following: string[];
   name: string;
@@ -38,7 +39,7 @@ export default function FollowersContainer() {
         id: doc.id,
         ...doc.data()
       }));
-      setUsersData(followedUsers)
+      setUsersData(followedUsers as userDataTypes[])
       setIsUsersDataLoading(false);
     })
     return () => unsubscribe();
