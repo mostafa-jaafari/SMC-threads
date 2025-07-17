@@ -8,6 +8,8 @@ import { doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "@/Firebase";
 import { useUserInfo } from "@/context/UserInfoContext";
 import PostSkeleton from "./PostSkeleton";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 
 
@@ -103,9 +105,20 @@ export default function PostsContainer() {
                     Page_Id === "following" && Posts.length === 0 ?
                     (
                         <div
-                            className="p-6 w-full flex justify-center text-neutral-500"
+                            className="p-6 w-full flex flex-col items-center gap-6 justify-center text-neutral-500"
                         >
-                            Please Follow people to see more content here...
+                            <p
+                                className="text-neutral-500"
+                            >
+                                Please Follow people to see more content here...
+                            </p>
+                            <Link
+                                href="/"
+                                className="flex items-center gap-1 py-2 px-4 text-sm rounded-xl bg-white 
+                                    hover:bg-neutral-300 text-black font-bold"
+                            >
+                                <ChevronLeft size={20}/> Back Home
+                            </Link>
                         </div>
                     )
                     :
