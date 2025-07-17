@@ -6,6 +6,7 @@ import { useUserInfo } from '@/context/UserInfoContext';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '@/Firebase';
 import Image from 'next/image';
+import { FollowButton } from '@/Components/Functions/FollowButton';
 
 
 export interface userDataTypes {
@@ -25,11 +26,12 @@ export interface userDataTypes {
 }
 export default function FollowersContainer() {
   const { currentFTab } = useEditProfile();
-  const { Following, Followers } = useUserInfo();
+  const { Following, Followers, email } = useUserInfo();
 
   const CurrentTabSelected = currentFTab === "following" ? Following : Followers;
   const [usersData, setUsersData] = useState<userDataTypes[] | []>([]);
   const [isUsersDataLoading, setIsUsersDataLoading] = useState<boolean>(true)
+  // const [isFollowing, setIsFollowing] = useState(true);
   useEffect(() => {
     const usersRef = collection(db, "users");
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
@@ -41,9 +43,10 @@ export default function FollowersContainer() {
       }));
       setUsersData(followedUsers as userDataTypes[])
       setIsUsersDataLoading(false);
+      // setIsFollowing(Following.includes(PostOwner));
     })
     return () => unsubscribe();
-  },[currentFTab, CurrentTabSelected])
+  },[currentFTab, CurrentTabSelected, Following])
   if(isUsersDataLoading) return <div>Loading...</div>
   return (
     <section
@@ -60,6 +63,7 @@ export default function FollowersContainer() {
                 FollowingLength={Following?.length}
               />
                 {usersData.length > 0 && usersData.map((user) => {
+                  const followedByBoth = Following.includes(user?.email) && Followers.includes(user?.email);
                   return (
                     <div
                       key={user?.email}
@@ -84,7 +88,7 @@ export default function FollowersContainer() {
                           <h1
                             className=''
                           >
-                            {user?.name}
+                            {user?.name} {followedByBoth ? "true" : "false"}
                           </h1>
                           <p
                             className='text-neutral-500'
@@ -93,9 +97,16 @@ export default function FollowersContainer() {
                           </p>
                         </span>
                         <button
-                          className='border py-1 px-4 rounded-xl text-neutral-700'
+                          onClick={async () => {
+                            const currentUserEmail = email;
+                            if (!currentUserEmail) return;
+                            await FollowButton(user?.email, currentUserEmail);
+                            }}
+                          className={`border py-2 px-4 rounded-xl 
+                            text-neutral-700 text-sm cursor-pointer
+                            ${!followedByBoth && currentFTab === "followers" ? "bg-white hover:bg-neutral-300 text-neutral-900 font-bold text-sm" : "hover:text-neutral-600"}`}
                         >
-                          {currentFTab === "followers" ? "Follow Back" : "Following"}
+                          {!followedByBoth && currentFTab === "followers" ? "Back Follow" : currentFTab === "followers" ? "Following" : "Following"}
                         </button>
                       </div>
                     </div>
