@@ -11,7 +11,7 @@ export default async function page({ params }: { params: Promise<{ pageid: strin
         case 'following':
             content = <section 
                       className="w-full flex flex-col justify-center 
-                        items-center lg:pt-16 md:pt-16 pt-20
+                        items-center lg:pt-16 md:pt-16 py-16
                         ">
                       <div 
                         className="lg:w-1/2 md:w-[70%] sm:w-[80%] w-[90%] bg-neutral-900 border border-neutral-800 md:w-[600px] lg:w-[600px] 
