@@ -8,6 +8,8 @@ interface OpenEditProfileContextTypes {
     isOpenEditProfile: boolean;
     setTabName: (T: string) => void;
     tabName: string;
+    currentFTab: string;
+    setCurrentFTab: (tab: string) => void;
 }
 const OpenEditProfileContext = createContext<OpenEditProfileContextTypes | undefined>(undefined);
 
@@ -15,8 +17,9 @@ const OpenEditProfileContext = createContext<OpenEditProfileContextTypes | undef
 export function OpenEditProfileProvider({ children }: { children: ReactNode }){
     const [isOpenEditProfile, setIsOpenEditProfile] = useState(false);
     const [tabName, setTabName] = useState('');
+    const [currentFTab, setCurrentFTab] = useState<string>("followers");
     return (
-        <OpenEditProfileContext.Provider value={{ setIsOpenEditProfile, isOpenEditProfile, setTabName, tabName }}>
+        <OpenEditProfileContext.Provider value={{ setIsOpenEditProfile, isOpenEditProfile, setTabName, tabName, currentFTab, setCurrentFTab }}>
             {children}
         </OpenEditProfileContext.Provider>
     )
