@@ -14,10 +14,11 @@ export default async function page({ params }: { params: Promise<{ pageid: strin
                         items-center lg:pt-16 md:pt-16 py-16
                         ">
                       <div 
-                        className="lg:w-1/2 md:w-[70%] sm:w-[80%] w-[90%] bg-neutral-900 border border-neutral-800 md:w-[600px] lg:w-[600px] 
-                          overflow-hidden rounded-3xl">
-                        <PostsContainer
-                        />
+                        className="lg:w-1/2 md:w-[70%] w-full
+                        sticky top-0 lg:border md:border 
+                        border-neutral-800 md:w-[600px] 
+                        lg:w-[600px] overflow-hidden rounded-3xl">
+                        <PostsContainer />
                       </div>
                     </section>
             break;
