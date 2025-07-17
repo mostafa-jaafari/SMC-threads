@@ -66,7 +66,7 @@ export default function FollowersContainer() {
         >
             <div
               ref={FollowersContainerRef}
-                className="lg:w-1/2 rounded-3xl bg-[#101010]
+                className="lg:w-1/2 md:w-[70%] sm:w-[80%] w-[90%] rounded-3xl bg-[#101010]
                   border border-neutral-800 overflow-hidden"
             >
               <FollowersContainerHeader
