@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth as ClientAuth } from "@/Firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { genareteUniqueUsername } from "@/Components/Functions/generateUniqueUsername";
 
 // Extend NextAuth types
 declare module "next-auth" {
@@ -102,6 +103,8 @@ export const authOptions: AuthOptions = {
             (profile as GitHubProfile).login ||
             profile.email?.split("@")[0]?.replace(/\./g, " ").replace(/\b\w/g, c => c.toUpperCase()) ||
             "User";
+            const UniqueUserName = await genareteUniqueUsername(profile?.email, profile?.name || fallbackName)
+
 
           if (!userSnap.exists()) {
             await setDoc(userRef, {
@@ -110,6 +113,7 @@ export const authOptions: AuthOptions = {
               name: fallbackName,
               profileimage: user.image,
               isPrivateProfile: false,
+              UserName: UniqueUserName,
             });
           }
         }
