@@ -32,5 +32,5 @@ export async function genareteUniqueUsername(displayName: string) {
     unique = await isUsernameUnique(username);
   }
 
-  return username;
+  return username?.toLowerCase().replace(" ","");
 }
