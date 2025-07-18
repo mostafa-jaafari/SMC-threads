@@ -23,7 +23,7 @@ async function isUsernameUnique(username: string) {
 }
 
 // الدالة الرئيسية التي تنشئ وتُخزن username
-export async function genareteUniqueUsername(userEmail: string, displayName: string | undefined) {
+export async function genareteUniqueUsername(userEmail: string, displayName: string) {
   let username;
   let unique = false;
 
