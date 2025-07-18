@@ -103,7 +103,7 @@ export const authOptions: AuthOptions = {
             (profile as GitHubProfile).login ||
             profile.email?.split("@")[0]?.replace(/\./g, " ").replace(/\b\w/g, c => c.toUpperCase()) ||
             "User";
-            const UniqueUserName = await genareteUniqueUsername(profile?.email, profile?.name || fallbackName)
+            const UniqueUserName = await genareteUniqueUsername(profile?.name || fallbackName)
 
 
           if (!userSnap.exists()) {
@@ -113,7 +113,7 @@ export const authOptions: AuthOptions = {
               name: fallbackName,
               profileimage: user.image,
               isPrivateProfile: false,
-              UserName: UniqueUserName,
+              username: UniqueUserName,
             });
           }
         }

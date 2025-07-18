@@ -1,5 +1,5 @@
 import { db } from "@/Firebase";
-import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 
 // دالة لتوليد username عشوائي من الاسم
 function generateUsername(name: string) {
@@ -23,7 +23,7 @@ async function isUsernameUnique(username: string) {
 }
 
 // الدالة الرئيسية التي تنشئ وتُخزن username
-export async function genareteUniqueUsername(userEmail: string, displayName: string) {
+export async function genareteUniqueUsername(displayName: string) {
   let username;
   let unique = false;
 
@@ -31,11 +31,6 @@ export async function genareteUniqueUsername(userEmail: string, displayName: str
     username = generateUsername(displayName);
     unique = await isUsernameUnique(username);
   }
-
-  const userRef = doc(db, "users", userEmail);
-  await updateDoc(userRef, {
-    username: username,
-  });
 
   return username;
 }
