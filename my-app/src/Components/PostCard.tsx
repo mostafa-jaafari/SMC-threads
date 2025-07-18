@@ -182,7 +182,8 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                             alt="Profile Image"
                             fill
                             className="object-cover"
-                            />
+                            loading="lazy"
+                        />
                     </div>
                 )}
                     <span
@@ -219,7 +220,11 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                             <h1 
                                 className="capitalize font-semibold hover:underline cursor-pointer"
                             >
-                                {userDetails?.name}
+                                <Link
+                                    href={Current_User?.data?.user?.email !== PostOwner ? `/profile/${userDetails?.username}` : "/profile"}
+                                >
+                                    {userDetails?.name}
+                                </Link>
                             </h1>
                         )}
 
@@ -241,6 +246,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                                     alt="Profile Image"
                                     fill
                                     className="object-cover"
+                                    loading="lazy"
                                 />
                             </div>
                         </div>
@@ -285,6 +291,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                     alt="Post Image"
                     width={400}
                     height={400}
+                    loading="lazy"
                     className="object-contain rounded-2xl border border-neutral-800 overflow-hidden"
                 />
                 <div
