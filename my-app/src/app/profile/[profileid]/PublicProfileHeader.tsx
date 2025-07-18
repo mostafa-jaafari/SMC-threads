@@ -3,11 +3,11 @@ import { UserInfoContextProps } from '@/context/UserInfoContext';
 import { db } from '@/Firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { ChartColumnBig, Instagram } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 
 
-export default function PublicProfileHeader({ UserName }) {
+export default function PublicProfileHeader({ UserName }: { UserName: string; }) {
     const [UserDetails, setUserDetails] = useState<UserInfoContextProps | null>(null);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
