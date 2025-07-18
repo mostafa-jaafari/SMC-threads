@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { createContext, useContext, useEffect, useState } from "react";
 
 
-interface UserInfoContextProps {
+export interface UserInfoContextProps {
     email: string,
     name: string,
     profileimage: string,

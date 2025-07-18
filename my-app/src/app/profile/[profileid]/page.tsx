@@ -2,8 +2,10 @@ import HeaderMobile from "@/Components/HeaderMobile";
 import PublicProfileHeader from "./PublicProfileHeader";
 
 
-
-export default async function page({ params }: { params: Promise<{ profileid: string }> }) {
+interface PageProps { 
+    params: Promise<{ profileid: string }>
+}
+export default async function page({ params }: PageProps) {
     const { profileid: Page_Id } = await params;
     return (
         <main className="w-full min-h-screen flex flex-col items-center">
@@ -18,7 +20,9 @@ export default async function page({ params }: { params: Promise<{ profileid: st
                     border-neutral-800 md:w-[600px]
                     lg:w-[600px] overflow-hidden rounded-3xl"
             >
-                <PublicProfileHeader />
+                <PublicProfileHeader
+                    UserName={Page_Id}
+                />
             </section>
         </main>
     )
