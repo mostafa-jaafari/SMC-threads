@@ -8,7 +8,7 @@ function generateUsername(name: string) {
 }
 
 // التحقق من عدم تكرار الـ username
-async function isUsernameUnique(username: string) {
+export async function isUsernameUnique(username: string) {
   const querySnapshot = await getDocs(collection(db, "users"));
   let exists = false;
 

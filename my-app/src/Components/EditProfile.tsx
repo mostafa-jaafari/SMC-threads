@@ -10,11 +10,13 @@ import { useEditProfile } from "@/context/OpenEditProfileContext";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/Firebase";
 import { useSession } from "next-auth/react";
+import { isUsernameUnique } from "./Functions/generateUniqueUsername";
 
 
 interface inputsEditTypes{
     Name: string;
     Bio: string;
+    UserName: string;
     Interests: string[];
     Links: {
             label: string,
@@ -24,10 +26,15 @@ interface inputsEditTypes{
 }
 interface FirestoreUserData {
   name: string;
+  username: string;
+  profileimage: string;
   profilebio: string;
   interests: string[];
+  links: {
+    label: string;
+    link: string;
+  }[];
   isPrivateProfile: boolean;
-  profileimage: string;
 }
 export function EditProfile(){
     const session = useSession();
@@ -35,7 +42,7 @@ export function EditProfile(){
     const { isOpenEditProfile, setIsOpenEditProfile, setTabName, tabName } = useEditProfile();
     const EditProfileHeaderRef = useRef<HTMLDivElement | null>(null);
     const EditProfileRef = useRef<HTMLDivElement | null>(null);
-    const { name, profileimage, profilebio, interests, isPrivateProfile, Links } = useUserInfo();
+    const { name, username, profileimage, profilebio, interests, isPrivateProfile, Links } = useUserInfo();
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
     const HandleChangeUpdateProfile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +76,7 @@ export function EditProfile(){
         Interests: [],
         isPrivateAccount: false,
         Links: [],
+        UserName: "",
     });
     useEffect(() => {
         if (isOpenEditProfile) {
@@ -78,11 +86,12 @@ export function EditProfile(){
                 Interests: interests || [],
                 isPrivateAccount: isPrivateProfile || false,
                 Links: Links || [],
+                UserName: username || "",
             });
             setInterestsInput("");
             setTabName("");
         }
-    }, [isOpenEditProfile, name, profilebio, interests, setTabName, isPrivateProfile, Links, profileimage]);
+    }, [isOpenEditProfile, name, username, profilebio, interests, setTabName, isPrivateProfile, Links, profileimage]);
 
     
 
@@ -94,9 +103,10 @@ export function EditProfile(){
             Interests: interests || [],
             isPrivateAccount: isPrivateProfile || false,
             Links: Links || [],
+            UserName: username || "",
         }));
     }
-    }, [name, profileimage, profilebio, interests, isPrivateProfile, Links]);
+    }, [name, username, profileimage, profilebio, interests, isPrivateProfile, Links]);
 
     const [animateTab, setAnimateTab] = useState(false);
     const [showTab, setShowTab] = useState(false);
@@ -220,6 +230,15 @@ export function EditProfile(){
     // Only update if name is not empty and has changed
     if (inputsEdit.Name.trim() && inputsEdit.Name !== name) {
         updates.name = inputsEdit.Name.trim();
+    }
+    // Only update if bio is not empty and has changed
+    if (inputsEdit.UserName.trim() && inputsEdit.UserName !== username) {
+        const IsNotExists = await isUsernameUnique(inputsEdit.UserName);
+        if(!IsNotExists){
+            toast.error(<span>sorry <b>{inputsEdit.UserName}</b> is already exists! please try another one</span>)
+            return;
+        }
+        updates.username = inputsEdit.UserName.trim();
     }
 
     // Only update if bio is not empty and has changed
@@ -539,6 +558,26 @@ export function EditProfile(){
                             </div>
                         </div>
                     </div>
+                    <div
+                            className="w-full border-b border-neutral-800
+                                flex flex-col pb-4"
+                        >
+                            <label 
+                                htmlFor="UserName"
+                                className="cursor-pointer 
+                                    hover:text-neutral-300 font-bold"
+                                >
+                                    UserName
+                            </label>
+                            <input 
+                                type="text" 
+                                id="UserName" 
+                                value={inputsEdit.UserName}
+                                onChange={(e) => setInputsEdit({ ...inputsEdit, UserName: e.target.value })}
+                                className="grow text-neutral-300 border-none 
+                                    outline-none bg-transparent"
+                            />
+                        </div>
                     <div
                         className="w-full border-b border-neutral-800
                             flex flex-col pb-4"

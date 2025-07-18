@@ -73,7 +73,7 @@ export default function FollowersContainer() {
                 FollowersLength={Followers?.length}
                 FollowingLength={Following?.length}
               />
-                {usersData.length > 0 && usersData.map((user, idx) => {
+                {usersData.length > 0 ? usersData.map((user, idx) => {
                   const followedByBoth = Following.includes(user?.email) && Followers.includes(user?.email);
                   return (
                     <div
@@ -123,7 +123,14 @@ export default function FollowersContainer() {
                       </div>
                     </div>
                   )
-                })}
+                }) : (
+                  <div
+                    className='w-full min-h-20 flex flex-col 
+                      justify-center items-center text-neutral-500'
+                  >
+                    no {currentFTab} yet!
+                  </div>
+                )}
             </div>
     </section>
   )

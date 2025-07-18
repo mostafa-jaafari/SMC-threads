@@ -20,6 +20,7 @@ interface UserInfoContextProps {
     Following: string[];
     Followers: string[];
     isLoadingUserData: boolean;
+    username: string;
 }
 const UserInfoContext = createContext<UserInfoContextProps | undefined>(undefined)
 
@@ -36,6 +37,7 @@ export function UserInfoProvider({ children }: { children: React.ReactNode }){
         Links: [],
         Following: [],
         Followers: [],
+        username: "",
     });
     const [isLoadingUserData, setIsLoadingUserData] = useState<boolean>(true);
     useEffect(() => {
@@ -56,6 +58,7 @@ export function UserInfoProvider({ children }: { children: React.ReactNode }){
                     Links: data?.Links,
                     Following: data?.following,
                     Followers: data?.followers,
+                    username: data?.username,
                 });
             }
             setIsLoadingUserData(false);

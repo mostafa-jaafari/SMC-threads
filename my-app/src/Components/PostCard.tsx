@@ -65,6 +65,7 @@ export interface UserDetailsTypes {
     profileimage: string;
     name: string;
     following: string[];
+    username: string;
 }
 export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Postuuid, CurrentPostIndex, PostsLength } : PostCardProps) {
     const Result = getRelativeTime({ createdAt });
@@ -230,7 +231,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                         <div className="w-full flex items-center justify-between">
                             <span>
                             <h1 className="text-xl font-semibold">{userDetails?.name}</h1>
-                            <h3 className="text-sm">mostafa_jaafari</h3>
+                            <h3 className="text-sm">{userDetails?.username}</h3>
                             </span>
                             <div 
                                 className="relative border w-16 h-16 

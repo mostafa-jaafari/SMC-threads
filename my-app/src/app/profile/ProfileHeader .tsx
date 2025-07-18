@@ -17,7 +17,7 @@ const Profile_Tabs = [
     "Reports"
 ];
 export default function ProfileHeader () {
-    const { name, profileimage, profilebio, interests, isLoadingUserData } = useUserInfo();
+    const { name, username, profileimage, profilebio, interests, isLoadingUserData } = useUserInfo();
     const { setIsOpenEditProfile, setTabName, setShowfollowersMenu, treeFollowers } = useEditProfile();
     const { setIsCreatePostOpen } = useCreatePost();
 
@@ -90,8 +90,9 @@ export default function ProfileHeader () {
                     :
                     (
                         <h2
+                            className='text-neutral-500'
                         >
-                        mostafa_jaafari
+                        {username}
                     </h2>
                     )}
                 </span>
