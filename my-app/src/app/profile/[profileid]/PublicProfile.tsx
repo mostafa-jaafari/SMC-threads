@@ -90,12 +90,24 @@ export default function PublicProfileHeader({ UserName }: { UserName: string; })
     }
     return (
         <main>
-            <div>
-                <span>
+            <div
+                className='w-full p-4'
+            >
+                <span
+                    onClick={() => router.back()}
+                    className='flex w-max rounded-full bg-transparent 
+                        hover:bg-neutral-900 cursor-pointer border 
+                        p-0.5 border-neutral-700'
+                >
                     <ArrowLeft size={20}/>
                 </span>
             </div>
-            <section>
+            <section
+                className="lg:w-1/2 md:w-[70%] w-full
+                    sticky top-0 lg:border md:border 
+                    border-neutral-800 md:w-[600px]
+                    lg:w-[600px] overflow-hidden rounded-3xl"
+            >
                 <div
                     className="p-6"
                 >
@@ -214,8 +226,6 @@ export default function PublicProfileHeader({ UserName }: { UserName: string; })
                         )
                     })}
                 </div>
-            </section>
-            <section>
                 {RenderTabs}
             </section>
         </main>

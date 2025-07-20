@@ -1,5 +1,5 @@
 import HeaderMobile from "@/Components/HeaderMobile";
-import ProfileHeader from "./ProfileHeader ";
+import PrivateProfile from "./PrivateProfile";
 import { EditProfile } from "@/Components/EditProfile";
 import { OpenEditProfileProvider } from "@/context/OpenEditProfileContext";
 import FollowersContainer from "@/app/profile/FollowersContainer";
@@ -25,9 +25,7 @@ export default function page(){
                         border-neutral-800 md:w-[600px] 
                         lg:w-[600px] overflow-hidden rounded-3xl"
                 >
-                    <div>
-                        <ProfileHeader />
-                    </div>
+                    <PrivateProfile />
                 </section>
                 <EditProfile />
                 <FollowersContainer />

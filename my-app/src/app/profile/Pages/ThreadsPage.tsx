@@ -30,7 +30,7 @@ export default function ThreadsPage({ UserDetails }: { UserDetails?: UserInfoCon
     if(isLoading) return <PostSkeleton />
     return (
         <div
-            className='pb-16'
+            className='lg:pb-0 md:pb-0 pb-16'
         >
             {posts.map((post) => {
                 return (

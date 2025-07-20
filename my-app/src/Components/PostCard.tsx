@@ -160,10 +160,18 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
     setCommentsLength(PostSelected.comments?.length || 0);
   }
 }, [allPosts, Postuuid, PostSelected]);
+
+    const [isShowMore, setIsShowMore] = useState(true);
+    const HandleResizeWhatsNew = (text: string) => {
+        if(text.length >= 14 && isShowMore) {
+            return text.slice(0, 100);
+        }
+        return text;
+    }
     return (
         <section
             className={`w-full flex items-start
-                gap-4 p-6
+                gap-4 lg:p-6 md:p-6 p-2
                 ${PostsLength && CurrentPostIndex !== PostsLength - 1 ? "border-b border-neutral-800" : ""}`}
         >
             <div className="relative">
@@ -284,7 +292,17 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                     <span className="text-neutral-500 text-sm">{Result}</span>
                 </div>
                 <p className="mb-4 mt-2">
-                    {whatsnew}
+                    {HandleResizeWhatsNew(whatsnew)}
+                    {whatsnew.length >= 14 && isShowMore && (
+                        <button
+                        className="text-neutral-700 text-xs cursor-pointer
+                        font-bold"
+                        onClick={() => setIsShowMore(!isShowMore)}
+                        >
+                        {isShowMore ? "Show More" : "Show Less"}
+                    </button>
+                    )}
+                    {whatsnew.length}
                 </p>
                 <Image 
                     src={imagepost || ""}
@@ -292,7 +310,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                     width={400}
                     height={400}
                     loading="lazy"
-                    className="object-contain rounded-2xl border border-neutral-800 overflow-hidden"
+                    className="max-h-80 object-contain rounded-2xl border border-neutral-800 overflow-hidden"
                 />
                 <div
                     className="w-full flex items-center gap-6 pt-4"

@@ -1,5 +1,5 @@
 import HeaderMobile from "@/Components/HeaderMobile";
-import PublicProfileHeader from "./PublicProfileHeader";
+import PublicProfile from "./PublicProfile";
 
 
 interface PageProps { 
@@ -14,16 +14,9 @@ export default async function page({ params }: PageProps) {
             >
                 <HeaderMobile />
             </div>
-            <section
-                className="lg:w-1/2 md:w-[70%] w-full
-                    sticky top-0 lg:border md:border 
-                    border-neutral-800 md:w-[600px]
-                    lg:w-[600px] overflow-hidden rounded-3xl"
-            >
-                <PublicProfileHeader
-                    UserName={Page_Id}
-                />
-            </section>
+            <PublicProfile
+                UserName={Page_Id}
+            />
         </main>
     )
 }
