@@ -1,6 +1,15 @@
 import HeaderMobile from "@/Components/HeaderMobile";
 import PostsContainer from "@/Components/PostsContainer";
+import type { Metadata } from "next";
 
+export async function generateMetadata({ params }: { params: { pageid: string } }): Promise<Metadata> {
+  const pageid = params.pageid;
+
+  return {
+    title: pageid === "following" ? "Following Page | My Threads" : `${pageid} Page | My Threads`,
+    description: "Catch up with the latest updates from the people you follow. The Following page shows a personalized feed of posts from your favorite creators, so you never miss a moment from the accounts that matter most to you.",
+  };
+}
 export default async function page({ params }: { params: Promise<{ pageid: string }> }) {
     const { pageid: Page_Id } = await params;
     if(Page_Id === "following" || Page_Id === "") return (
