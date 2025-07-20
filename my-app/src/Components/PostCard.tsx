@@ -162,8 +162,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
 }, [allPosts, Postuuid, PostSelected]);
 
     const [isShowMore, setIsShowMore] = useState(true);
-    const 
-    HandleResizeWhatsNew = (text: string) => {
+    const HandleResizeWhatsNew = (text: string) => {
         if(text.length >= 14 && isShowMore) {
             return text.slice(0, 100);
         }
@@ -294,7 +293,7 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                 </div>
                 <p className="mb-4 mt-2">
                     {HandleResizeWhatsNew(whatsnew)}
-                    {whatsnew?.length >= 14 && isShowMore && (
+                    {whatsnew?.length >= 100 && (
                         <button
                             className="text-neutral-700 text-xs cursor-pointer
                             font-bold"
@@ -303,7 +302,6 @@ export default function PostCard({ createdAt, whatsnew, imagepost, PostOwner, Po
                             {isShowMore ? "Show More" : "Show Less"}
                         </button>
                     )}
-                    {whatsnew.length}
                 </p>
                 <Image 
                     src={imagepost || ""}
