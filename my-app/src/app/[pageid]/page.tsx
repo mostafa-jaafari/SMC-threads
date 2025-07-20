@@ -1,9 +1,8 @@
 import HeaderMobile from "@/Components/HeaderMobile";
 import PostsContainer from "@/Components/PostsContainer";
-import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: { params: { pageid: string } }): Promise<Metadata> {
-  const pageid = params.pageid;
+export async function generateMetadata({ params }: { params: Promise<{ pageid: string }> }) {
+  const { pageid } = await params;
 
   return {
     title: pageid === "following" ? "Following Page | My Threads" : `${pageid} Page | My Threads`,
